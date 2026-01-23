@@ -11,7 +11,14 @@ Search and explore Sylius e-commerce framework documentation locally.
 
 ## Installation
 
+From terminal:
 ```bash
+claude plugin marketplace add Guiziweb/guiziweb-plugins
+claude plugin install sylius-doc@guiziweb-plugins
+```
+
+Or inside Claude Code:
+```
 /plugin marketplace add Guiziweb/guiziweb-plugins
 /plugin install sylius-doc@guiziweb-plugins
 ```
@@ -24,7 +31,7 @@ To allow the skill to read documentation without prompts, add this to your `~/.c
 {
   "permissions": {
     "allow": [
-      "Read(~/.claude/sylius-doc/**)"
+      "Read(~/.cache/sylius-doc/**)"
     ]
   }
 }
@@ -50,12 +57,12 @@ The first time you use the skill, it automatically:
 
 To pull the latest documentation and regenerate the index:
 ```
-/sylius-doc:sync-docs
+/sylius-doc:sync
 ```
 
 ## How It Works
 
-1. Claude reads the documentation index (`~/.claude/sylius-doc/index.md`)
+1. Claude reads the documentation index (`~/.cache/sylius-doc/index.md`)
 2. Based on your question, Claude picks 1-2 relevant files
 3. Claude reads those files and answers your question
 
@@ -64,17 +71,16 @@ The index shows the full documentation tree structure, allowing Claude to unders
 ## Documentation Structure
 
 ```
-~/.claude/sylius-doc/
+~/.cache/sylius-doc/
 ├── index.md                    # Tree index of all files
-└── Documentation/
-    └── sylius-2.0/
-        ├── the-customization-guide/   # How to customize Sylius
-        ├── the-book/                  # Core concepts
-        ├── the-cookbook/              # How-to recipes
-        └── ...
+├── Documentation/
+│   ├── sylius-2.0/             # How to customize Sylius
+│   └── features-plugins/       # Official plugins (CMS, invoicing...)
+└── Stack/
+    └── docs/                   # Grid, Resource, TwigHooks
 ```
 
 ## Limitations
 
 - **Not mandatory**: Claude may use this skill automatically, but you can ask explicitly: "check the Sylius docs"
-- **Manual update**: Use `/sylius-doc:sync-docs` to pull the latest changes when needed
+- **Manual update**: Use `/sylius-doc:sync` to pull the latest changes when needed

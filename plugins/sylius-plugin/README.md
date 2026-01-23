@@ -14,9 +14,16 @@ Create new Sylius plugins from scratch with Docker environment.
 
 ## Installation
 
+From terminal:
 ```bash
+claude plugin marketplace add Guiziweb/guiziweb-plugins
+claude plugin install sylius-plugin@guiziweb-plugins
+```
+
+Or inside Claude Code:
+```
 /plugin marketplace add Guiziweb/guiziweb-plugins
-/plugin install sylius-init-plugin@guiziweb-plugins
+/plugin install sylius-plugin@guiziweb-plugins
 ```
 
 ## Usage

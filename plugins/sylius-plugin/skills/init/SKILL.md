@@ -1,5 +1,5 @@
 ---
-name: init-plugin
+name: init
 description: Create a new Sylius plugin from scratch with Docker environment
 allowed-tools: AskUserQuestion, Bash, Read, Edit, TodoWrite
 ---

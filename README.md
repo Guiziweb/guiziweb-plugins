@@ -21,7 +21,7 @@ Or inside Claude Code:
 | Plugin | Description |
 |--------|-------------|
 | [sylius-doc](./plugins/sylius-doc/README.md) | Search Sylius documentation locally with index-based search |
-| [sylius-init-plugin](./plugins/sylius-init-plugin/README.md) | Create new Sylius plugins with Docker environment |
+| [sylius-plugin](./plugins/sylius-plugin/README.md) | Create new Sylius plugins with Docker environment |
 
 ## Compatibility
 
