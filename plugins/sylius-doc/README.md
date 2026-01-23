@@ -4,10 +4,10 @@ Search and explore Sylius e-commerce framework documentation locally.
 
 ## Features
 
-- Search local Sylius documentation
+- Fast local search using an indexed documentation tree
+- Claude reads the index and picks the most relevant files
 - Lazy loading: Documentation cloned only when first used
-- Fast search using filename patterns (one file = one concept)
-- Automatic initialization when needed
+- Automatic index generation for quick navigation
 
 ## Installation
 
@@ -34,41 +34,47 @@ To allow the skill to read documentation without prompts, add this to your `~/.c
 
 ### Search Sylius Documentation
 
-Ask questions about Sylius (Claude will automatically invoke the skill):
-- "How do I extend the Product entity?"
-- "Show me how Sylius grids work"
-- "How to customize forms in Sylius?"
+Ask questions about Sylius:
+- "How do Twig Hooks work?"
+- "How do I extend an entity?"
+- "How to customize grids?"
+- "How to add a product attribute?"
 
 ### First Time Setup
 
-The first time you use the skill, it will automatically clone the Sylius documentation to `~/.claude/sylius-doc/Documentation/` (~10 seconds, with visible progress).
+The first time you use the skill, it automatically:
+1. Clones the Sylius documentation
+2. Generates an index of all files
+
+### Update Documentation
+
+To pull the latest documentation and regenerate the index:
+```
+/sylius-doc:sync-docs
+```
 
 ## How It Works
 
-1. When you ask a Sylius question, the skill checks if documentation exists
-2. If not found, it automatically clones the docs (one-time setup, ~10s)
-3. Searches using filename patterns (fast and efficient)
-4. Reads the most relevant file(s) and answers your question
+1. Claude reads the documentation index (`~/.claude/sylius-doc/index.md`)
+2. Based on your question, Claude picks 1-2 relevant files
+3. Claude reads those files and answers your question
 
-Documentation is stored in `~/.claude/sylius-doc/` and shared across all projects.
+The index shows the full documentation tree structure, allowing Claude to understand where each topic is documented (e.g., Twig Hooks are in `customizing-templates.md`).
 
-## Why Local Clone?
+## Documentation Structure
 
-We tested several approaches before settling on local cloning:
-
-| Approach | Result |
-|----------|--------|
-| **WebFetch** | Too slow - fetching pages on-demand adds latency |
-| **MCP Server** | Too slow - even with Sylius docs available via MCP |
-| **Local clone** | Fast - Claude searches local files instantly |
-
-Local cloning is the simplest and fastest solution: one-time ~10s setup, then instant searches forever.
+```
+~/.claude/sylius-doc/
+├── index.md                    # Tree index of all files
+└── Documentation/
+    └── sylius-2.0/
+        ├── the-customization-guide/   # How to customize Sylius
+        ├── the-book/                  # Core concepts
+        ├── the-cookbook/              # How-to recipes
+        └── ...
+```
 
 ## Limitations
 
-- **Not mandatory**: Claude may use this skill automatically, but nothing forces it to. Don't hesitate to ask explicitly: "check the Sylius docs"
-- **No auto-update**: The documentation is cloned once and not automatically updated. To refresh, delete the folder and let the skill re-clone:
-  ```bash
-  rm -rf ~/.claude/sylius-doc
-  ```
-- **Future improvement**: An update command (`/sylius-doc update`) is planned to pull the latest version without manual deletion.
+- **Not mandatory**: Claude may use this skill automatically, but you can ask explicitly: "check the Sylius docs"
+- **Manual update**: Use `/sylius-doc:sync-docs` to pull the latest changes when needed

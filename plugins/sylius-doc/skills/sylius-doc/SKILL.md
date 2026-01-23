@@ -1,44 +1,46 @@
 ---
 name: sylius-doc
 description: Search the local Sylius e-commerce framework documentation (entities, grids, hooks, forms, customization, plugins).
-allowed-tools: Glob, Read, Skill
+allowed-tools: Bash, Read, Skill
 ---
 
 # Sylius Documentation Search
 
-Search the local Sylius documentation efficiently. One file = one concept.
+Search the local Sylius documentation using the index.
 
-## FIRST: Check if documentation exists
+## FIRST: Check if documentation is ready
 
-Use Glob to check if documentation exists:
+Check if index exists:
+```bash
+test -f ~/.claude/sylius-doc/index.md && echo "ready" || echo "setup needed"
 ```
-Glob(pattern="README.md", path="~/.claude/sylius-doc/Documentation")
-```
 
-If NO files found (documentation not cloned yet):
-1. Tell the user: "First time setup: Cloning Sylius documentation (~10 seconds, this is normal)..."
-2. Call the setup skill: `Skill(skill: "sylius-doc:setup-docs")`
-3. **After setup completes**, search again with: `Skill(skill: "sylius-doc:sylius-doc", args: "<original user question>")`
+If "setup needed":
+1. Tell the user: "Setting up Sylius documentation (first time only)..."
+2. Call: `Skill(skill: "sylius-doc:sync-docs")`
 
-## Process (STRICT - Follow exactly)
+## Process
 
-1. **ONE Glob search** with the main keyword from the user's question
-2. **Read 1-2 most relevant files** from the results
-3. **Answer immediately** with the information found
+1. **Read the index** (`~/.claude/sylius-doc/index.md`)
+2. **Analyze the user's question** and pick 1-2 most relevant files from the index
+3. **Read the selected files** from `~/.claude/sylius-doc/Documentation/sylius-2.0/...`
+4. **Answer** with the information found
 
-## Rules
+## File Path Mapping
 
-- Use ONLY ONE Glob call: `Glob(pattern="**/*keyword*.md", path="~/.claude/sylius-doc/Documentation")`
-- Extract ONE main keyword (e.g., "grids", "product", "entity", "hooks")
-- Read maximum 2 files
-- DO NOT make multiple Glob searches with variations
-- DO NOT search for "index", "component", "bundle" files
-- Answer directly with what you find
+The index shows relative paths. Full paths are:
+- `the-customization-guide/customizing-grids.md` → `~/.claude/sylius-doc/Documentation/sylius-2.0/the-customization-guide/customizing-grids.md`
+- `the-book/products/attributes.md` → `~/.claude/sylius-doc/Documentation/sylius-2.0/the-book/products/attributes.md`
 
 ## Examples
 
-- "How do grids work?" → ONE Glob: `**/*grid*.md` → Read top 1-2 files → Answer
-- "Extend Product entity" → ONE Glob: `**/*product*.md` → Read top 1-2 files → Answer
-- "How do hooks work?" → ONE Glob: `**/*hook*.md` → Read top 1-2 files → Answer
+- "How do Twig Hooks work?" → Read `the-customization-guide/customizing-templates.md` (hooks are documented there)
+- "How to extend an entity?" → Read `the-customization-guide/customizing-models/how-to-add-a-custom-model.md`
+- "How do grids work?" → Read `the-customization-guide/customizing-grids.md`
+- "How to add a product attribute?" → Read `the-book/products/attributes.md`
 
-Be fast. One search, 1-2 reads, done.
+## Rules
+
+- Read maximum 2 files
+- Answer directly with what you find
+- If the user's question is about a plugin (CMS, invoicing, refund, wishlist), look in `features-plugins/`

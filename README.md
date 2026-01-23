@@ -18,25 +18,10 @@ Or inside Claude Code:
 
 ## Available Plugins
 
-### [Sylius Documentation](./plugins/sylius-doc/)
-
-Search and explore Sylius e-commerce framework documentation locally.
-
-- Fast search using filename patterns
-- Lazy loading: Documentation cloned only when first used
-- Shared documentation across all projects
-
-[View documentation →](./plugins/sylius-doc/README.md)
-
-### [Sylius Plugin Initializer](./plugins/sylius-init-plugin/)
-
-Create new Sylius plugins from scratch with Docker environment.
-
-- Clones official PluginSkeleton
-- Configures Docker environment
-- Initializes database with fixtures
-
-[View documentation →](./plugins/sylius-init-plugin/README.md)
+| Plugin | Description |
+|--------|-------------|
+| [sylius-doc](./plugins/sylius-doc/README.md) | Search Sylius documentation locally with index-based search |
+| [sylius-init-plugin](./plugins/sylius-init-plugin/README.md) | Create new Sylius plugins with Docker environment |
 
 ## Compatibility
 

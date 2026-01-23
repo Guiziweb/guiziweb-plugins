@@ -14,7 +14,7 @@
       "name": "sylius-doc",
       "source": "./plugins/sylius-doc",
       "description": "Search and explore Sylius e-commerce framework documentation locally",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": {
         "name": "Guiziweb",
         "email": "guiziweb@gmail.com"
