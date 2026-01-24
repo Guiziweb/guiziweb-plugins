@@ -14,13 +14,11 @@ Search and explore Sylius e-commerce framework documentation locally.
 From terminal:
 ```bash
 claude plugin marketplace add Guiziweb/guiziweb-plugins
-claude plugin install sylius-doc@guiziweb-plugins
 ```
 
 Or inside Claude Code:
 ```
 /plugin marketplace add Guiziweb/guiziweb-plugins
-/plugin install sylius-doc@guiziweb-plugins
 ```
 
 ## Configuration
@@ -49,9 +47,9 @@ Ask questions about Sylius:
 
 ### First Time Setup
 
-The first time you use the skill, it automatically:
-1. Clones the Sylius documentation
-2. Generates an index of all files
+Documentation is automatically cloned at session start (via hook). First launch may take ~10 seconds.
+
+If the documentation is missing mid-session, the skill will clone it on demand.
 
 ### Update Documentation
 

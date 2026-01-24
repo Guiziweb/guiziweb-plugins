@@ -7,13 +7,18 @@ Claude Code plugins for web development workflows.
 From terminal:
 ```bash
 claude plugin marketplace add Guiziweb/guiziweb-plugins
-claude plugin install sylius-doc@guiziweb-plugins
 ```
 
 Or inside Claude Code:
 ```
 /plugin marketplace add Guiziweb/guiziweb-plugins
-/plugin install sylius-doc@guiziweb-plugins
+```
+
+## Update
+
+To remove the marketplace:
+```bash
+claude plugin marketplace remove guiziweb-plugins
 ```
 
 ## Available Plugins
