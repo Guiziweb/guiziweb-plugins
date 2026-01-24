@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/Guiziweb/guiziweb-plugins/compare/v1.1.0...v1.1.1) (2026-01-24)
+
+
+### Bug Fixes
+
+* sync marketplace plugin names and add validation hook ([c8808ee](https://github.com/Guiziweb/guiziweb-plugins/commit/c8808ee4985d492cee6ddb349626ba56dd0c2778))
+
 ## [1.1.0](https://github.com/Guiziweb/guiziweb-plugins/compare/v1.0.0...v1.1.0) (2026-01-24)
 
 

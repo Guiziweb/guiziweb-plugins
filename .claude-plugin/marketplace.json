@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Sylius development tools and documentation for Claude Code",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "pluginRoot": "./plugins"
   },
   "plugins": [
@@ -14,7 +14,7 @@
       "name": "sylius-doc",
       "source": "./plugins/sylius-doc",
       "description": "Search and explore Sylius e-commerce framework documentation locally",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "author": {
         "name": "Guiziweb",
         "email": "guiziweb@gmail.com"
@@ -22,14 +22,19 @@
       "homepage": "https://github.com/Guiziweb/guiziweb-plugins/blob/main/plugins/sylius-doc/README.md",
       "repository": "https://github.com/Guiziweb/guiziweb-plugins",
       "license": "MIT",
-      "keywords": ["sylius", "documentation", "php", "ecommerce"],
+      "keywords": [
+        "sylius",
+        "documentation",
+        "php",
+        "ecommerce"
+      ],
       "category": "documentation"
     },
     {
       "name": "sylius-plugin",
       "source": "./plugins/sylius-plugin",
       "description": "Create new Sylius plugins from scratch with Docker environment",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "author": {
         "name": "Guiziweb",
         "email": "guiziweb@gmail.com"
@@ -37,7 +42,13 @@
       "homepage": "https://github.com/Guiziweb/guiziweb-plugins/blob/main/plugins/sylius-plugin/README.md",
       "repository": "https://github.com/Guiziweb/guiziweb-plugins",
       "license": "MIT",
-      "keywords": ["sylius", "plugin", "initialization", "docker", "php"],
+      "keywords": [
+        "sylius",
+        "plugin",
+        "initialization",
+        "docker",
+        "php"
+      ],
       "category": "productivity"
     }
   ]
