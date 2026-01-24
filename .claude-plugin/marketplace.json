@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Sylius development tools and documentation for Claude Code",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "pluginRoot": "./plugins"
   },
   "plugins": [
@@ -26,15 +26,15 @@
       "category": "documentation"
     },
     {
-      "name": "sylius-init-plugin",
-      "source": "./plugins/sylius-init-plugin",
-      "description": "Create new Sylius plugin from scratch with Docker environment",
-      "version": "1.0.0",
+      "name": "sylius-plugin",
+      "source": "./plugins/sylius-plugin",
+      "description": "Create new Sylius plugins from scratch with Docker environment",
+      "version": "1.1.0",
       "author": {
         "name": "Guiziweb",
         "email": "guiziweb@gmail.com"
       },
-      "homepage": "https://github.com/Guiziweb/guiziweb-plugins/blob/main/plugins/sylius-init-plugin/README.md",
+      "homepage": "https://github.com/Guiziweb/guiziweb-plugins/blob/main/plugins/sylius-plugin/README.md",
       "repository": "https://github.com/Guiziweb/guiziweb-plugins",
       "license": "MIT",
       "keywords": ["sylius", "plugin", "initialization", "docker", "php"],

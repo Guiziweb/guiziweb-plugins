@@ -1,0 +1,21 @@
+#!/bin/bash
+
+echo "Validating Claude Code plugins..."
+
+# Validate marketplace
+if ! claude plugin validate . 2>/dev/null; then
+    echo "❌ Marketplace validation failed"
+    exit 1
+fi
+
+# Validate each plugin
+for plugin in plugins/*/; do
+    if [ -f "$plugin.claude-plugin/plugin.json" ]; then
+        if ! claude plugin validate "$plugin" 2>/dev/null; then
+            echo "❌ Plugin validation failed: $plugin"
+            exit 1
+        fi
+    fi
+done
+
+echo "✅ All validations passed"
