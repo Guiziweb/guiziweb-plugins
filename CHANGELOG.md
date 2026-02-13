@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/Guiziweb/guiziweb-plugins/compare/v1.1.1...v1.1.2) (2026-02-13)
+
+
+### Bug Fixes
+
+* **sylius-doc:** use Sylius/Sylius repo for docs sync ([3e2f93b](https://github.com/Guiziweb/guiziweb-plugins/commit/3e2f93b95ceeba0b22fa268eff515855215fa12f))
+
 ## [1.1.1](https://github.com/Guiziweb/guiziweb-plugins/compare/v1.1.0...v1.1.1) (2026-01-24)
 
 
