@@ -1,25 +1,26 @@
 ---
 name: init
-description: Create a new Sylius plugin from scratch with Docker environment
-allowed-tools: AskUserQuestion, Bash, Read, Edit, TodoWrite
+description: Create a new Sylius plugin from scratch with Docker environment and GitHub repo
+argument-hint: "[Company] [PluginName] [description] [GitHubOrg]"
+allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 ---
 
 # Sylius Plugin Development
 
 ## Creating a new plugin
 
-1. **Use AskUserQuestion** to collect:
-   - Company name (PascalCase): e.g., `Acme`, `MyCompany`
-   - Plugin name (PascalCase): e.g., `ProductReview`
-   - Description: e.g., "Product review system"
+Arguments are appended at the end as `ARGUMENTS: Company PluginName "description" GitHubOrg`. Parse them to get Company (PascalCase), PluginName (PascalCase), Description, and GitHubOrg. If GitHubOrg is not provided, default to Company. Visibility = `public`.
 
-2. **Show what will be generated** and ask for confirmation:
-   - Namespace: `{Company}\{Name}Plugin`
-   - Package: `{company-kebab}/{name-kebab}-plugin`
-   - DB prefix: `{company_snake}_{name_snake}`
+If no arguments are provided, use AskUserQuestion to collect Company, PluginName, Description, GitHub account, and visibility.
+
+1. **Derive names** from Company and PluginName:
+   - Namespace: `{Company}\Sylius{Name}Plugin`
+   - Package: `{company-kebab}/sylius-{name-kebab}-plugin`
+   - DB prefix: `{company_snake}_sylius_{name_snake}`
    - Directory: `{Company}{Name}Plugin`
+   - GitHub repo: `https://github.com/{GitHubOrg}/{Company}{Name}Plugin`
 
-3. **Clone the skeleton:**
+2. **Clone the skeleton:**
    ```bash
    git clone https://github.com/Sylius/PluginSkeleton.git {Company}{Name}Plugin
    cd {Company}{Name}Plugin
@@ -27,58 +28,48 @@ allowed-tools: AskUserQuestion, Bash, Read, Edit, TodoWrite
    cp compose.override.dist.yml compose.override.yml
    ```
 
-4. **Configure dev environment**: edit `compose.override.yml` to replace `APP_ENV: ${ENV:-prod}` with `APP_ENV: dev`.
+3. **Check ports**: read `compose.override.yml` to identify exposed ports, then run `lsof` checks in parallel. If a port is in use, find a free port and update `compose.override.yml`.
 
-5. **Check ports**: read `compose.override.yml` to identify exposed ports, then run `lsof` checks in parallel. If a port is in use, find a free port and update `compose.override.yml`.
-
-6. **Initialize Docker**:
+4. **Initialize Docker** (this takes several minutes — run in background using `run_in_background: true`):
    ```bash
-   make init
+   ENV=dev make init
    ```
-   If error, run the same command again.
+   If error, run the same command again. Wait for completion before proceeding.
 
-7. **Rename the plugin** (via Docker):
+5. **Rename the plugin** (via Docker, after `make init` finishes):
    ```bash
-   COMPANY={Company} PLUGIN_NAME={Name} DESCRIPTION="{description}" SKIP_INTERACTION=1 make rename
+   docker compose exec php php bin/rename-plugin.php --company={Company} --plugin-name={Name} --description="{description}" --skip-interaction
    ```
 
-8. **Initialize the database**:
+6. **Create GitHub repo and push** (from the plugin directory):
+   ```bash
+   git init
+   git add -A
+   git commit -m "Initialize {Company}Sylius{Name}Plugin from skeleton"
+   gh repo create {GitHubOrg}/{Company}{Name}Plugin --{visibility} --description="{description}" --source=. --push
+   git tag v0.1.0
+   git push origin v0.1.0
+   ```
+
+7. **Initialize the database**:
    ```bash
    make database-init && make load-fixtures
    ```
 
-9. **Open browser and display summary**:
-   ```bash
-   open http://localhost:{http_port}
-   open http://localhost:{http_port}/admin
-   ```
-   Then display:
-   ```
-   Plugin {Company}{Name}Plugin initialized!
+8. **Display setup summary** to the user:
 
-   Services:
-   - Front: http://localhost:{http_port}
-   - Admin: http://localhost:{http_port}/admin
-   - MySQL: localhost:{mysql_port}
-   - Mailhog: http://localhost:{mailhog_port}
+    | Service | URL |
+    |---------|-----|
+    | Frontend | http://localhost:{http_port} |
+    | Admin | http://localhost:{http_port}/admin |
+    | MySQL | localhost:{mysql_port} |
+    | Mailhog | http://localhost:{mailhog_port} |
 
-   Admin credentials:
-   - Email:    sylius@example.com
-   - Password: sylius
-   ```
+    Admin credentials: `sylius@example.com` / `sylius`
 
-
-## Commands (after installation)
-
-**IMPORTANT:** These commands are for daily use AFTER installation. Do not use them during setup.
-
-| Action | Command |
-|--------|---------|
-| Start containers | `make up` |
-| Stop containers | `make down` |
-| Clear cache | `make cache-clear` |
-
-**Symfony Console:** `docker compose exec php vendor/bin/console <cmd>`
+    Next steps:
+    - Publish on [Packagist](https://packagist.org/packages/submit)
+    - Add Symfony Flex recipe
 
 
 ## References

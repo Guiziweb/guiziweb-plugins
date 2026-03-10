@@ -26,7 +26,15 @@ claude plugin marketplace remove guiziweb-plugins
 | Plugin | Description |
 |--------|-------------|
 | [sylius-doc](./plugins/sylius-doc/README.md) | Search Sylius documentation locally with index-based search |
-| [sylius-plugin](./plugins/sylius-plugin/README.md) | Create new Sylius plugins with Docker environment |
+| [sylius-plugin](./plugins/sylius-plugin/README.md) | Develop Sylius plugins — init, models, Stimulus controllers, daily dev commands |
+
+## Local Development
+
+To test a plugin locally without installing from the marketplace:
+```bash
+claude --plugin-dir /path/to/guiziweb-plugins/plugins/sylius-plugin/
+claude --plugin-dir /path/to/guiziweb-plugins/plugins/sylius-doc/
+```
 
 ## Compatibility
 

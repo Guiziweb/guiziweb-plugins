@@ -1,16 +1,6 @@
-# Sylius Plugin Initializer
+# Sylius Plugin Skills
 
-Create new Sylius plugins from scratch with Docker environment.
-
-## Features
-
-- Initialize a new Sylius plugin project
-- Clones official PluginSkeleton
-- Configures Docker environment (PHP, MySQL, Mailhog)
-- Auto-detects available ports
-- Renames plugin to your namespace
-- Initializes database with fixtures
-- Opens browser when ready
+Skills for developing Sylius plugins with Docker.
 
 ## Installation
 
@@ -24,52 +14,55 @@ Or inside Claude Code:
 /plugin marketplace add Guiziweb/guiziweb-plugins
 ```
 
-## Usage
+## Available Skills
 
-### Create a New Plugin
+### `sylius-plugin:init`
 
-Ask Claude to create a new Sylius plugin:
+Create a new Sylius plugin from scratch.
+
+Ask Claude:
 - "Create a new Sylius plugin"
 - "Initialize a Sylius plugin project"
-- "Set up a new plugin for Sylius"
 
-The skill will:
-1. Ask for company name (e.g., `Acme`)
-2. Ask for plugin name (e.g., `ProductReview`)
-3. Ask for description
-4. Show what will be generated and ask for confirmation
-5. Clone PluginSkeleton
-6. Configure Docker environment
-7. Check and adjust ports if needed
-8. Initialize Docker containers
-9. Rename plugin to your namespace
-10. Initialize database with fixtures
-11. Open browser to frontend and admin
+---
 
-## What You Get
+### `sylius-plugin:dev-commands`
 
-After initialization, you'll have:
+Daily development commands (Docker, database, assets, QA).
 
-```
-AcmeProductReviewPlugin/
-├── src/                    # Your plugin code
-├── tests/                  # Test suite
-├── compose.yml            # Docker configuration
-├── Makefile               # Development commands
-└── ...                    # Full plugin structure
-```
+Ask Claude:
+- "How do I build assets in this plugin?"
+- "How do I access the database?"
 
-**Services:**
-- Frontend: `http://localhost:{port}`
-- Admin: `http://localhost:{port}/admin`
-- MySQL: `localhost:{port}`
-- Mailhog: `http://localhost:{port}`
+---
 
-**Default admin credentials:**
-- Email: `sylius@example.com`
-- Password: `sylius`
+### `sylius-plugin:add-model`
 
-## References
+Add a new Doctrine entity as a Sylius Resource.
 
-- [PluginSkeleton GitHub](https://github.com/Sylius/PluginSkeleton)
-- [Sylius Plugin Development Guide](https://docs.sylius.com/en/latest/book/plugins/)
+Ask Claude:
+- "Add a model Foo to this plugin"
+
+---
+
+### `sylius-plugin:add-translatable-model`
+
+Add a translatable Doctrine entity as a Sylius Resource.
+
+Ask Claude:
+- "Add a translatable model Foo to this plugin"
+
+---
+
+### `sylius-plugin:override-model`
+
+Override an existing Sylius model in a plugin.
+
+---
+
+### `sylius-plugin:add-stimulus-controller`
+
+Add a Stimulus JS controller to a plugin.
+
+Ask Claude:
+- "Add a Stimulus controller MyController to the admin"
