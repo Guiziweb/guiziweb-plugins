@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/Guiziweb/guiziweb-plugins/compare/v1.1.2...v1.2.0) (2026-03-10)
+
+
+### Features
+
+* **sylius-plugin:** add skills for models, Stimulus controllers and dev commands ([a57cb47](https://github.com/Guiziweb/guiziweb-plugins/commit/a57cb47e9d109291d24532bf4c0a462570917e79))
+
 ## [1.1.2](https://github.com/Guiziweb/guiziweb-plugins/compare/v1.1.1...v1.1.2) (2026-02-13)
 
 
