@@ -18,7 +18,7 @@ Or inside Claude Code:
 
 ### `sylius-plugin:init`
 
-Create a new Sylius plugin from scratch.
+Create a new Sylius plugin from the official skeleton — includes Docker setup, GitHub repo, `.claude/rules/`, and Release Please workflow out of the box.
 
 Ask Claude:
 - "Create a new Sylius plugin"

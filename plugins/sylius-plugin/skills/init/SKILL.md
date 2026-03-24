@@ -19,44 +19,54 @@ If no arguments are provided, use AskUserQuestion to collect Company, PluginName
    - DB prefix: `{company_snake}_sylius_{name_snake}`
    - Directory: `{Company}{Name}Plugin`
    - GitHub repo: `https://github.com/{GitHubOrg}/{Company}{Name}Plugin`
+   - Store the absolute path: `PLUGIN_DIR="$(pwd)/{Company}{Name}Plugin"`
 
-2. **Clone the skeleton:**
+2. **Create GitHub repo** (empty, with description):
    ```bash
-   git clone https://github.com/Sylius/PluginSkeleton.git {Company}{Name}Plugin
-   cd {Company}{Name}Plugin
-   rm -rf .git
-   cp compose.override.dist.yml compose.override.yml
+   gh repo create {GitHubOrg}/{Company}{Name}Plugin --{visibility} --description="{description}"
    ```
 
-3. **Check ports**: read `compose.override.yml` to identify exposed ports, then run `lsof` checks in parallel. If a port is in use, find a free port and update `compose.override.yml`.
-
-4. **Initialize Docker** (this takes several minutes — run in background using `run_in_background: true`):
+3. **Clone the skeleton locally** (for Docker setup):
    ```bash
-   ENV=dev make init
+   git clone https://github.com/Sylius/PluginSkeleton.git {Company}{Name}Plugin
+   rm -rf {Company}{Name}Plugin/.git
+   cp {Company}{Name}Plugin/compose.override.dist.yml {Company}{Name}Plugin/compose.override.yml
+   ```
+
+4. **Check ports**: read `{Company}{Name}Plugin/compose.override.yml` to identify exposed ports, then run `lsof` checks in parallel. If a port is in use, find a free port and update the file.
+
+5. **Initialize Docker** (this takes several minutes — run in background using `run_in_background: true`):
+   ```bash
+   cd "$PLUGIN_DIR" && ENV=dev make init
    ```
    If error, run the same command again. Wait for completion before proceeding.
 
-5. **Rename the plugin** (via Docker, after `make init` finishes):
+6. **Push skeleton to trigger bootstrap CI**:
    ```bash
-   docker compose exec php php bin/rename-plugin.php --company={Company} --plugin-name={Name} --description="{description}" --skip-interaction
+   cd "$PLUGIN_DIR" && git init && git add -A && git commit -m "chore: init"
+   cd "$PLUGIN_DIR" && git remote add origin https://github.com/{GitHubOrg}/{Company}{Name}Plugin.git && git push origin main
+   ```
+   Then wait for the `Bootstrap Plugin` CI workflow to finish (rename + cleanup + templates, committed under the bot). Poll with:
+   ```bash
+   gh run watch --repo {GitHubOrg}/{Company}{Name}Plugin --exit-status
    ```
 
-6. **Create GitHub repo and push** (from the plugin directory):
+7. **Pull the bootstrapped code**:
    ```bash
-   git init
-   git add -A
-   git commit -m "Initialize {Company}Sylius{Name}Plugin from skeleton"
-   gh repo create {GitHubOrg}/{Company}{Name}Plugin --{visibility} --description="{description}" --source=. --push
-   git tag v0.1.0
-   git push origin v0.1.0
+   cd "$PLUGIN_DIR" && git pull origin main
    ```
 
-7. **Initialize the database**:
+8. **Push v0.1.0 tag** to trigger recipe and Packagist CI:
    ```bash
-   make database-init && make load-fixtures
+   cd "$PLUGIN_DIR" && git tag v0.1.0 && git push origin v0.1.0
    ```
 
-8. **Display setup summary** to the user:
+9. **Initialize the database**:
+   ```bash
+   cd "$PLUGIN_DIR" && ENV=dev make database-init && ENV=dev make load-fixtures
+   ```
+
+10. **Display setup summary** to the user:
 
     | Service | URL |
     |---------|-----|
@@ -66,14 +76,3 @@ If no arguments are provided, use AskUserQuestion to collect Company, PluginName
     | Mailhog | http://localhost:{mailhog_port} |
 
     Admin credentials: `sylius@example.com` / `sylius`
-
-    Next steps:
-    - Publish on [Packagist](https://packagist.org/packages/submit)
-    - Add Symfony Flex recipe
-
-
-## References
-
-- [PluginSkeleton GitHub](https://github.com/Sylius/PluginSkeleton)
-- [Test Application Overview](https://docs.sylius.com/plugins-development-guide/test-application.md)
-- [Creating plugins with Test Application](https://docs.sylius.com/plugins-development-guide/test-application/creating-and-testing-plugins-using-test-application.md)
