@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.0](https://github.com/Guiziweb/guiziweb-plugins/compare/v1.2.0...v1.3.0) (2026-03-25)
+
+
+### Features
+
+* **init:** use bootstrap workflow instead of manual setup ([ed23d77](https://github.com/Guiziweb/guiziweb-plugins/commit/ed23d778e1fee3b8b302d09e19fc0f72dcbcdf72))
+* **sylius-plugin:** simplify init skill, move templates to .github, remove sylius-doc ([04b836c](https://github.com/Guiziweb/guiziweb-plugins/commit/04b836c5ac362c3fe39e3f8ec86456c6c17068f3))
+
 ## [1.2.0](https://github.com/Guiziweb/guiziweb-plugins/compare/v1.1.2...v1.2.0) (2026-03-10)
 
 
