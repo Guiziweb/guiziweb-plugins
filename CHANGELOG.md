@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/Guiziweb/guiziweb-plugins/compare/v1.3.0...v1.4.0) (2026-04-06)
+
+
+### Features
+
+* add code-review plugin for Sylius ([a081c73](https://github.com/Guiziweb/guiziweb-plugins/commit/a081c73202283c05eb1d488585f2118042913602))
+
+
+### Bug Fixes
+
+* **code-review:** simplify skill to single sonnet agent ([cf02d84](https://github.com/Guiziweb/guiziweb-plugins/commit/cf02d84375c31c623ac8b6c5ae8a44ddf5e05570))
+
 ## [1.3.0](https://github.com/Guiziweb/guiziweb-plugins/compare/v1.2.0...v1.3.0) (2026-03-25)
 
 
