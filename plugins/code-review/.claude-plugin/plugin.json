@@ -1,6 +1,6 @@
 {
   "name": "code-review",
-  "description": "Automated code review for Sylius plugin pull requests — checks for bugs, CLAUDE.md compliance, and Sylius-specific patterns",
+  "description": "Automated code review for Sylius plugin pull requests — checks for bugs and logic errors",
   "version": "1.0.0",
   "author": {
     "name": "Guiziweb",

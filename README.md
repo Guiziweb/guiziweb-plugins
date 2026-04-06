@@ -26,6 +26,7 @@ claude plugin marketplace remove guiziweb-plugins
 | Plugin | Description |
 |--------|-------------|
 | [sylius-plugin](./plugins/sylius-plugin/README.md) | Develop Sylius plugins — init, models, Stimulus controllers, daily dev commands |
+| [code-review](./plugins/code-review/README.md) | Automated code review for Sylius plugin pull requests — checks for bugs and logic errors |
 
 ## Local Development
 
