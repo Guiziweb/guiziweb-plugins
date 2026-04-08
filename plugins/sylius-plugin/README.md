@@ -66,3 +66,13 @@ Add a Stimulus JS controller to a plugin.
 
 Ask Claude:
 - "Add a Stimulus controller MyController to the admin"
+
+---
+
+### `sylius-plugin:add-behat`
+
+Add Behat UI tests (admin + Panther) to an existing plugin.
+
+Ask Claude:
+- "Add Behat tests to this plugin"
+- "Create a Behat scenario for the admin orders grid"
