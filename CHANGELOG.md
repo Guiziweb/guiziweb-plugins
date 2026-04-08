@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.0](https://github.com/Guiziweb/guiziweb-plugins/compare/v1.4.0...v1.5.0) (2026-04-08)
+
+
+### Features
+
+* **sylius-plugin:** add add-behat skill ([35818f3](https://github.com/Guiziweb/guiziweb-plugins/commit/35818f3ca11f513a62a68d8c34f9bce734e71c53))
+* **sylius-plugin:** translate and improve dev-commands skill ([f92b1c6](https://github.com/Guiziweb/guiziweb-plugins/commit/f92b1c68326b627ca5df73686e8330961388798a))
+
 ## [1.4.0](https://github.com/Guiziweb/guiziweb-plugins/compare/v1.3.0...v1.4.0) (2026-04-06)
 
 

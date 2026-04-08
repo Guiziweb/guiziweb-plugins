@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Sylius plugin development tools for Claude Code",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "pluginRoot": "./plugins"
   },
   "plugins": [
@@ -14,7 +14,7 @@
       "name": "code-review",
       "source": "./plugins/code-review",
       "description": "Automated code review for Sylius plugin pull requests",
-      "version": "1.4.0",
+      "version": "1.5.0",
       "author": {
         "name": "Guiziweb",
         "email": "guiziweb@gmail.com"
