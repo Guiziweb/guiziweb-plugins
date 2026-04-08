@@ -1,99 +1,115 @@
 ---
 name: dev-commands
-description: Commandes du quotidien pour développer sur un plugin Sylius (Docker, BDD, assets, QA)
+description: Daily development commands for Sylius plugins (Docker, database, assets, QA)
 allowed-tools: Bash, Read
 ---
 
-# Commandes de développement — Plugin Sylius
+# Dev Commands — Sylius Plugin
 
-Toutes les commandes passent par Docker. Le container PHP s'appelle `php`.
+All commands go through `make`. The `ENV` variable determines which environment (and database) is used — it defaults to `dev`.
+
+```bash
+make <command>            # → ENV=dev (default), sylius_dev database
+ENV=test make <command>   # → sylius_test database
+```
+
+Only specify `ENV=test` explicitly when targeting the test environment.
 
 ---
 
-## Containers
+## Docker
 
-| Action | Commande |
-|--------|----------|
-| Démarrer | `make up` |
-| Arrêter | `make down` |
-| Arrêter + supprimer volumes | `make clean` |
-| Shell PHP | `make php-shell` |
-| Shell Node | `make node-shell` |
+| Action | Command |
+|--------|---------|
+| Start | `make up` |
+| Stop | `make down` |
+| Stop + remove volumes | `make clean` |
 
 ---
 
 ## Symfony Console
 
+For commands not covered by a make target, run via docker compose:
+
 ```bash
-docker compose exec php vendor/bin/console <cmd>
+docker compose run --rm php vendor/bin/console <cmd>
 ```
 
-Exemples courants :
+Common examples:
 ```bash
-docker compose exec php vendor/bin/console cache:clear
-docker compose exec php vendor/bin/console doctrine:migrations:migrate --no-interaction
-docker compose exec php vendor/bin/console doctrine:migrations:diff --namespace=DoctrineMigrations
-docker compose exec php vendor/bin/console messenger:consume <transport> --limit=10 -vv
-docker compose exec php vendor/bin/console debug:container <service>
-docker compose exec php vendor/bin/console debug:router
+docker compose run --rm php vendor/bin/console cache:clear
+docker compose run --rm php vendor/bin/console doctrine:migrations:migrate --no-interaction
+docker compose run --rm php vendor/bin/console doctrine:migrations:diff --namespace=DoctrineMigrations
+docker compose run --rm php vendor/bin/console debug:container <service>
+docker compose run --rm php vendor/bin/console debug:router
 ```
 
 ---
 
-## Base de données
+## Database
 
-| Action | Commande |
-|--------|----------|
-| Créer + migrer | `make database-init` |
-| Drop + créer + migrer | `make database-reset` |
-| Charger les fixtures | `make load-fixtures` |
+| Action | Command |
+|--------|---------|
+| Create + migrate | `make database-init` |
+| Drop + create + migrate | `make database-reset` |
+| Load fixtures | `make load-fixtures` |
+
+For the test database (required before running Behat):
+```bash
+ENV=test make database-init
+```
 
 ---
 
 ## Assets (Stimulus / Webpack)
 
-Build standard (après modif JS uniquement) :
+Standard build (after JS changes only):
 ```bash
 docker compose run --rm nodejs
 ```
 
-Build forcé (après modif `package.json`, ajout d'un controller) :
+Forced build (after `package.json` changes or adding a controller):
 ```bash
 docker compose run --rm nodejs "cd vendor/sylius/test-application && yarn install --force && yarn build"
 ```
 
-> `--force` est nécessaire quand `package.json` change : yarn ne re-copie pas le package si la version n'a pas changé.
+> `--force` is needed when `package.json` changes: yarn won't re-copy a package if the version hasn't changed.
 
-Watch (dev) :
+Watch (dev):
 ```bash
 docker compose run --rm -i nodejs "cd vendor/sylius/test-application && yarn watch"
 ```
 
-> `make node-watch` dans le Makefile utilise `npm run watch` — ne fonctionne pas. Utiliser la commande ci-dessus.
+> `make node-watch` uses `npm run watch` — does not work. Use the command above instead.
 
 ---
 
-## Base de données — Requêtes SQL
+## SQL Queries
 
-Via le container MySQL (recommandé pour explorer) :
+Via MySQL container (recommended for exploration):
 ```bash
-docker compose exec mysql mysql -uroot sylius_dev -e "SELECT * FROM ma_table LIMIT 5;"
+docker compose exec mysql mysql -uroot sylius_dev -e "SELECT * FROM my_table LIMIT 5;"
 ```
 
-Via Doctrine (affichage tabulaire) :
+For the test database:
 ```bash
-docker compose exec php vendor/bin/console doctrine:query:sql "SELECT * FROM ma_table LIMIT 5"
+docker compose exec mysql mysql -uroot sylius_test -e "SELECT * FROM my_table LIMIT 5;"
 ```
 
-> Credentials : user `root`, pas de mot de passe. Base : `sylius_dev` (dev) ou `sylius_test` (test).
+Via Doctrine (tabular output):
+```bash
+docker compose run --rm php vendor/bin/console doctrine:query:sql "SELECT * FROM my_table LIMIT 5"
+```
+
+> Credentials: user `root`, no password.
 
 ---
 
 ## QA
 
 ```bash
-make phpstan    # Analyse statique
-make ecs        # Coding standards
-make phpunit    # Tests unitaires
-make behat      # Tests fonctionnels
+make phpstan        # Static analysis
+make ecs            # Coding standards
+make phpunit        # Unit tests
+ENV=test make behat # Functional tests (requires test database)
 ```
