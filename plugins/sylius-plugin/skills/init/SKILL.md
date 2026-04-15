@@ -1,7 +1,7 @@
 ---
 name: init
-description: Create a new Sylius plugin from scratch with Docker environment and GitHub repo
-argument-hint: "[PluginName] [description]"
+description: Create a new Sylius plugin from scratch with Docker environment
+argument-hint: "[Company] [PluginName] [description]"
 allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 ---
 
@@ -9,51 +9,54 @@ allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 
 ## Creating a new plugin
 
-Arguments are appended at the end as `ARGUMENTS: PluginName "description"`. Parse them to get PluginName (PascalCase) and Description.
+Arguments are appended at the end as `ARGUMENTS: Company PluginName "description"`. Parse them to get Company (PascalCase), PluginName (PascalCase), and Description.
 
-If no arguments are provided, use AskUserQuestion to collect PluginName and Description.
+If no arguments are provided, use AskUserQuestion to collect Company, PluginName, and Description.
 
-1. **Trigger the bootstrap workflow** (creates repo + bootstraps skeleton automatically):
-   ```bash
-   gh workflow run bootstrap.yml --repo Guiziweb/.github \
-     --field repo="Guiziweb{Name}Plugin" \
-     --field company="Guiziweb" \
-     --field name="{Name}" \
-     --field description="{description}"
-   ```
-   Then get the run ID and wait for it to finish:
-   ```bash
-   sleep 3 && RUN_ID=$(gh run list --repo Guiziweb/.github --workflow=bootstrap.yml --limit=1 --json databaseId --jq '.[0].databaseId')
-   gh run watch $RUN_ID --repo Guiziweb/.github --exit-status
-   ```
+1. **Derive names** from Company and PluginName:
+   - Namespace: `{Company}\Sylius{Name}Plugin`
+   - Package: `{company-kebab}/sylius-{name-kebab}-plugin`
+   - DB prefix: `{company_snake}_sylius_{name_snake}`
+   - Directory: `{Company}{Name}Plugin`
 
-2. **Clone the bootstrapped repo locally**:
+2. **Clone the skeleton:**
    ```bash
-   cd ~
-   git clone https://github.com/Guiziweb/Guiziweb{Name}Plugin.git
-   cp ~/Guiziweb{Name}Plugin/compose.override.dist.yml ~/Guiziweb{Name}Plugin/compose.override.yml
+   git clone https://github.com/Sylius/PluginSkeleton.git {Company}{Name}Plugin
+   cd {Company}{Name}Plugin
+   rm -rf .git
+   cp compose.override.dist.yml compose.override.yml
    ```
 
-3. **Check ports**: read `~/Guiziweb{Name}Plugin/compose.override.yml` to identify exposed ports, then run `lsof` checks in parallel. If a port is in use, find a free port and update the file.
+3. **Check ports**: read `compose.override.yml` to identify exposed ports, then run `lsof` checks in parallel. If a port is in use, find a free port and update `compose.override.yml`.
 
 4. **Initialize Docker** (this takes several minutes — run in background using `run_in_background: true`):
    ```bash
-   cd ~/Guiziweb{Name}Plugin && ENV=dev make init
+   ENV=dev make init
    ```
    If error, run the same command again. Wait for completion before proceeding.
 
-5. **Initialize the database**:
+5. **Rename the plugin** (via Docker, after `make init` finishes):
    ```bash
-   cd ~/Guiziweb{Name}Plugin && ENV=dev make database-init && ENV=dev make load-fixtures
+   docker compose exec php php bin/rename-plugin.php --company={Company} --plugin-name={Name} --description="{description}" --skip-interaction
    ```
 
-6. **Display setup summary** to the user:
+6. **Initialize the database**:
+   ```bash
+   make database-init && make load-fixtures
+   ```
 
-   | Service  | URL                                    |
-   |----------|----------------------------------------|
-   | Frontend | http://localhost:{http_port}           |
-   | Admin    | http://localhost:{http_port}/admin     |
-   | MySQL    | localhost:{mysql_port}                 |
-   | Mailhog  | http://localhost:{mailhog_port}        |
+7. **Display setup summary** to the user:
 
-   Admin credentials: `sylius@example.com` / `sylius`
+    | Service | URL |
+    |---------|-----|
+    | Frontend | http://localhost:{http_port} |
+    | Admin | http://localhost:{http_port}/admin |
+    | MySQL | localhost:{mysql_port} |
+    | Mailhog | http://localhost:{mailhog_port} |
+
+    Admin credentials: `sylius@example.com` / `sylius`
+
+    Next steps:
+    - Create a GitHub repo and push
+    - Publish on [Packagist](https://packagist.org/packages/submit)
+    - Add Symfony Flex recipe

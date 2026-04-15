@@ -7,20 +7,20 @@ allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 
 # Add a Model to a Sylius Plugin
 
-Ask the user for the ModelName if not provided. Read `composer.json` and existing source files to detect the plugin namespace and DB prefix.
+Ask the user for the ModelName if not provided, and the list of fields with their types. Read `composer.json` and existing source files to detect the plugin namespace and DB prefix.
 
 ---
 
 ## 1. Create the interface
 
-`src/{Domain}/Entity/{ModelName}Interface.php`
+`src/Entity/{ModelName}Interface.php`
 
 ```php
 <?php
 
 declare(strict_types=1);
 
-namespace Acme\SyliusExamplePlugin\{Domain}\Entity;
+namespace {Namespace}\Entity;
 
 use Sylius\Component\Resource\Model\ResourceInterface;
 
@@ -33,14 +33,14 @@ interface {ModelName}Interface extends ResourceInterface
 
 ## 2. Create the entity
 
-`src/{Domain}/Entity/{ModelName}.php`
+`src/Entity/{ModelName}.php`
 
 ```php
 <?php
 
 declare(strict_types=1);
 
-namespace Acme\SyliusExamplePlugin\{Domain}\Entity;
+namespace {Namespace}\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -74,15 +74,9 @@ sylius_resource:
         {plugin_alias}.{model_snake}:
             driver: doctrine/orm
             classes:
-                model: Acme\SyliusExamplePlugin\{Domain}\Entity\{ModelName}
+                model: {Namespace}\Entity\{ModelName}
 ```
 
-Make sure `config/config.yaml` imports `resources.yaml`:
-
-```yaml
-imports:
-    - { resource: "resources.yaml" }
-```
 
 ## 4. Configure Doctrine mapping in the DI Extension
 
@@ -98,7 +92,7 @@ $container->prependExtensionConfig('doctrine', [
                         'is_bundle' => false,
                         'type' => 'attribute',
                         'dir' => __DIR__ . '/../../src',
-                        'prefix' => 'Acme\SyliusExamplePlugin',
+                        'prefix' => '{Namespace}',
                     ],
                 ],
             ],
@@ -141,7 +135,7 @@ docker compose exec php vendor/bin/console doctrine:mapping:info | grep {ModelNa
 
 Expected output:
 ```
- [OK]   Acme\SyliusExamplePlugin\{Domain}\Entity\{ModelName}
+ [OK]   {Namespace}\Entity\{ModelName}
 ```
 
 ## 7. Generate the migration
@@ -159,3 +153,11 @@ Apply the migration:
 ```bash
 docker compose exec php vendor/bin/console doctrine:migrations:migrate --no-interaction
 ```
+
+---
+
+## Next steps
+
+1. Run `/sylius-plugin:add-form`
+2. If the model needs translations → run `/sylius-plugin:add-translatable-model`
+3. Run `/sylius-plugin:add-grid`, then `/sylius-plugin:add-routes`, then `/sylius-plugin:add-menu`
