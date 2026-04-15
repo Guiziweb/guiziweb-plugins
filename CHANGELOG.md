@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/Guiziweb/guiziweb-plugins/compare/v1.5.0...v1.6.0) (2026-04-15)
+
+
+### Features
+
+* **sylius-plugin:** add 8 new skills and rename override-model to extends-model ([3224ada](https://github.com/Guiziweb/guiziweb-plugins/commit/3224ada5626fb18abe132b7c3d81a72209e0ede8))
+
 ## [1.5.0](https://github.com/Guiziweb/guiziweb-plugins/compare/v1.4.0...v1.5.0) (2026-04-08)
 
 
