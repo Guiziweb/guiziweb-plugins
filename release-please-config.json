@@ -1,23 +1,26 @@
 {
   "packages": {
-    ".": {
+    "plugins/sylius-plugin": {
       "release-type": "simple",
+      "component": "sylius-plugin",
       "bump-minor-pre-major": true,
       "extra-files": [
         {
           "type": "json",
-          "path": "plugins/sylius-plugin/.claude-plugin/plugin.json",
+          "path": ".claude-plugin/plugin.json",
           "jsonpath": "$.version"
-        },
+        }
+      ]
+    },
+    "plugins/sylius-stack": {
+      "release-type": "simple",
+      "component": "sylius-stack",
+      "bump-minor-pre-major": true,
+      "extra-files": [
         {
           "type": "json",
-          "path": ".claude-plugin/marketplace.json",
-          "jsonpath": "$.metadata.version"
-        },
-        {
-          "type": "json",
-          "path": ".claude-plugin/marketplace.json",
-          "jsonpath": "$.plugins[0].version"
+          "path": ".claude-plugin/plugin.json",
+          "jsonpath": "$.version"
         }
       ]
     }

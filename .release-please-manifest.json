@@ -1,3 +1,4 @@
 {
-  ".": "1.6.0"
+  "plugins/sylius-plugin": "1.6.0",
+  "plugins/sylius-stack": "1.0.0"
 }
