@@ -77,6 +77,13 @@ sylius_resource:
                 model: {Namespace}\Entity\{ModelName}
 ```
 
+If this is the first resource, also add the import to `config/config.yaml` so the file is loaded (the skeleton does not import it by default):
+
+```yaml
+imports:
+    - { resource: "resources.yaml" }
+```
+
 
 ## 4. Configure Doctrine mapping in the DI Extension
 

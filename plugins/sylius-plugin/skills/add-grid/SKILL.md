@@ -15,7 +15,16 @@ Ask the user for the ModelName if not provided. Read `composer.json` and `src/**
 
 ## 1. Configure the Grid
 
-Create or update `config/grids.yaml`:
+Create or update `config/grids.yaml`.
+
+If this is the first grid, also add the import to `config/config.yaml` so the file is loaded (the skeleton does not import it by default):
+
+```yaml
+imports:
+    - { resource: "grids.yaml" }
+```
+
+Then the grid itself:
 
 ```yaml
 sylius_grid:
