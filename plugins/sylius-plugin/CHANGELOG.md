@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.0](https://github.com/Guiziweb/guiziweb-plugins/compare/sylius-plugin-v1.6.0...sylius-plugin-v1.7.0) (2026-04-16)
+
+
+### Features
+
+* **sylius-plugin:** add form-extension skill and align existing skills with Sylius docs ([6f3cbf4](https://github.com/Guiziweb/guiziweb-plugins/commit/6f3cbf4a38453c44dcd34f6741ce5ea09e2958aa))
+
+
+### Bug Fixes
+
+* **sylius-plugin:** load resources.yaml and grids.yaml via config.yaml imports ([76b3aab](https://github.com/Guiziweb/guiziweb-plugins/commit/76b3aab762c9acb74dc7ebf8ba519d831d751eb6))
+
 ## [1.6.0](https://github.com/Guiziweb/guiziweb-plugins/compare/v1.5.0...v1.6.0) (2026-04-15)
 
 
