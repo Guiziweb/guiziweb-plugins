@@ -1,0 +1,9 @@
+{
+  "name": "sylius-stack",
+  "description": "Build Symfony apps with the Sylius Stack (Resource, Grid, Bootstrap Admin UI, Twig Hooks)",
+  "version": "1.0.0",
+  "author": {
+    "name": "Guiziweb",
+    "email": "guiziweb@gmail.com"
+  }
+}
