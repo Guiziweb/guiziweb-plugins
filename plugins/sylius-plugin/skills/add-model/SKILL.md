@@ -126,13 +126,10 @@ doctrine_migrations:
 ## 6. Verify the resource is recognized
 
 ```bash
-docker compose exec php vendor/bin/console sylius:debug:resource | grep {model_snake}
+docker compose exec php vendor/bin/console sylius:debug:resource '{Namespace}\Entity\{ModelName}'
 ```
 
-Expected output:
-```
-  {plugin_alias}.{model_snake}
-```
+The output should list the resource metadata (alias `{plugin_alias}.{model_snake}`, model class, driver, …).
 
 Also verify Doctrine sees the entity:
 

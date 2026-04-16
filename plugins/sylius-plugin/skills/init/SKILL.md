@@ -1,6 +1,6 @@
 ---
 name: init
-description: Create a new Sylius plugin from scratch with Docker environment
+description: Create a new Sylius plugin from the official PluginSkeleton with Docker environment
 argument-hint: "[Company] [PluginName] [description]"
 allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 ---

@@ -353,14 +353,11 @@ docker compose exec php vendor/bin/console doctrine:migrations:migrate --no-inte
 
 ```bash
 docker compose exec php vendor/bin/console cache:clear
-docker compose exec php vendor/bin/console sylius:debug:resource | grep {model_snake}
+docker compose exec php vendor/bin/console sylius:debug:resource '{Namespace}\Entity\{ModelName}'
+docker compose exec php vendor/bin/console sylius:debug:resource '{Namespace}\Entity\{ModelName}Translation'
 ```
 
-Expected:
-```
-  {plugin_alias}.{model_snake}
-  {plugin_alias}.{model_snake}_translation
-```
+Both commands should print the resource metadata. The main resource should reference the translation in its `translation.classes.model` row.
 
 ---
 

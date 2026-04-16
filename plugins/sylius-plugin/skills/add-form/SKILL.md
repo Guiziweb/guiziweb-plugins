@@ -1,6 +1,6 @@
 ---
 name: add-form
-description: Add an admin FormType for an existing non-translatable Sylius Resource
+description: Add an admin FormType for an existing Sylius Resource
 argument-hint: "[ModelName]"
 allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 ---

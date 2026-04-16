@@ -30,7 +30,7 @@ Sylius base models like `Sylius\Component\Core\Model\Product` are **`MappedSuper
 
 declare(strict_types=1);
 
-namespace Tests\Acme\SyliusExamplePlugin\Entity;
+namespace Tests\{Namespace}\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Sylius\Component\Core\Model\Product as BaseProduct;
@@ -58,19 +58,19 @@ sylius_product:
     resources:
         product:
             classes:
-                model: Tests\Acme\SyliusExamplePlugin\Entity\Product
+                model: Tests\{Namespace}\Entity\Product
 
 sylius_taxonomy:
     resources:
         taxon:
             classes:
-                model: Tests\Acme\SyliusExamplePlugin\Entity\Taxon
+                model: Tests\{Namespace}\Entity\Taxon
 
 sylius_channel:
     resources:
         channel:
             classes:
-                model: Tests\Acme\SyliusExamplePlugin\Entity\Channel
+                model: Tests\{Namespace}\Entity\Channel
 ```
 
 Import it in `tests/TestApplication/config/config.yaml`:
@@ -97,7 +97,7 @@ doctrine:
                         is_bundle: false
                         type: attribute
                         dir: '%kernel.project_dir%/../../../tests/TestApplication/src/Entity'
-                        prefix: Tests\Acme\SyliusExamplePlugin\Entity
+                        prefix: Tests\{Namespace}\Entity
 ```
 
 > `naming_strategy: underscore_number_aware` is required for Doctrine to convert camelCase property names (`$metadataTitle`) to snake_case column names (`metadata_title`) automatically.
@@ -112,17 +112,14 @@ docker compose exec php vendor/bin/console debug:container --parameter=sylius.mo
 
 Expected:
 ```
-sylius.model.product.class   Tests\Acme\SyliusExamplePlugin\Entity\Product
+sylius.model.product.class   Tests\{Namespace}\Entity\Product
 ```
 
 ```bash
-docker compose exec php vendor/bin/console doctrine:mapping:info | grep Tests
+docker compose exec php vendor/bin/console doctrine:mapping:describe 'Tests\{Namespace}\Entity\{ModelName}'
 ```
 
-Expected:
-```
-[OK]   Tests\Acme\SyliusExamplePlugin\Entity\Product
-```
+The command should output the mapped columns (inherited parent ones + your custom fields). If it errors with "not a mapped entity", the Doctrine mapping in step 3 is not taking effect.
 
 ---
 
@@ -181,75 +178,5 @@ After the migration, the field exists in the database but is not visible in the 
 
 | Field type | Next step |
 |------------|-----------|
-| Relation to a Sylius Resource (ManyToOne, ManyToMany) | Run `/sylius-plugin:add-autocomplete` — it creates the autocomplete type, the form extension, and the Twig hook |
-| Scalar field (string, boolean, integer…) | Manually create a `{TargetModel}TypeExtension` (see pattern below) and a Twig hook |
-
-### Form extension pattern for scalar fields
-
-`src/Form/Extension/{TargetModel}TypeExtension.php`:
-
-```php
-<?php
-
-declare(strict_types=1);
-
-namespace {Namespace}\Form\Extension;
-
-use Sylius\Bundle\{TargetBundle}\Form\Type\{TargetModel}Type;
-use Symfony\Component\Form\AbstractTypeExtension;
-use Symfony\Component\Form\Extension\Core\Type\TextType; // or CheckboxType, IntegerType…
-use Symfony\Component\Form\FormBuilderInterface;
-
-final class {TargetModel}TypeExtension extends AbstractTypeExtension
-{
-    public function buildForm(FormBuilderInterface $builder, array $options): void
-    {
-        $builder->add('{field_name}', TextType::class, [
-            'label' => '{plugin_alias}.form.{target_model_snake}.{field_name}',
-            'required' => false,
-        ]);
-    }
-
-    public static function getExtendedTypes(): iterable
-    {
-        return [{TargetModel}Type::class];
-    }
-}
-```
-
-Register in `config/services.xml`:
-
-```xml
-<service id="{plugin_alias}.form.extension.{target_model_snake}_type"
-         class="{Namespace}\Form\Extension\{TargetModel}TypeExtension">
-    <tag name="form.type_extension" />
-</service>
-```
-
-Then add a Twig template and hook — identify the correct hook name first:
-
-```bash
-docker compose exec php vendor/bin/console debug:config sylius_twig_hooks 2>&1 | grep "{target_model_snake}.*create\|{target_model_snake}.*update" | head -10
-```
-
-`templates/admin/{target_model_snake}/form/sections/general/{field_name}.html.twig`:
-
-```twig
-{{ form_row(hookable_metadata.context.form.{field_name}) }}
-```
-
-`config/twig_hooks/admin/{target_model_snake}.yaml`:
-
-```yaml
-sylius_twig_hooks:
-    hooks:
-        'sylius_admin.{target_model_snake}.create.content.form.sections.general':
-            {field_name}:
-                template: '@{BundleName}/admin/{target_model_snake}/form/sections/general/{field_name}.html.twig'
-                priority: -100
-
-        'sylius_admin.{target_model_snake}.update.content.form.sections.general':
-            {field_name}:
-                template: '@{BundleName}/admin/{target_model_snake}/form/sections/general/{field_name}.html.twig'
-                priority: -100
-```
+| Relation to a Sylius Resource (ManyToOne, ManyToMany) | `/sylius-plugin:add-autocomplete` — creates the autocomplete type, then use `/sylius-plugin:add-form-extension` with that type |
+| Scalar field (string, boolean, integer…) | `/sylius-plugin:add-form-extension` — wires a `{TargetModel}TypeExtension`, Twig hook and translation |

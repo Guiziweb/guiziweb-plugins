@@ -38,7 +38,9 @@ ENV=test make database-init
 
 ---
 
-## 3. JavaScript tests (Chrome via CDP)
+## 3. JavaScript tests (Chrome via CDP) — only if needed
+
+Skip this step if all your scenarios are non-`@javascript` (pure HTML admin flows, no Stimulus / LiveComponent interactions).
 
 For tests that require JavaScript (LiveComponents, Stimulus controllers), Behat uses a Chrome container via the Chrome DevTools Protocol.
 
@@ -190,7 +192,7 @@ Register it in `tests/Behat/Resources/services.xml`:
 
 ```xml
 <service id="my_plugin.context.ui.admin.my_context"
-         class="Tests\MyPlugin\Behat\Context\Ui\Admin\MyContext" />
+         class="Tests\{Namespace}\Behat\Context\Ui\Admin\{Context}" />
 ```
 
 ---
@@ -223,7 +225,18 @@ And there is a customer account "john.doe@gmail.com"
 
 ---
 
-## 8. Run the tests
+## 8. Verify the suite is registered
+
+Before running the full suite, check it is correctly loaded and its steps are resolved:
+
+```bash
+docker compose run --rm php vendor/bin/behat -dl --suite={suite_name}
+```
+
+- If the suite is missing, Behat prints `` `{suite_name}` suite is not found or has not been properly registered. `` — fix `tests/Behat/Resources/suites.yml`.
+- If the suite loads, Behat lists every step definition available inside it.
+
+## 9. Run the tests
 
 ```bash
 ENV=test make behat
@@ -231,7 +244,7 @@ ENV=test make behat
 
 To run a specific suite only:
 ```bash
-ENV=test make behat ARGS="--suite=grid_assistant_ai_search"
+ENV=test make behat ARGS="--suite={suite_name}"
 ```
 
 ---

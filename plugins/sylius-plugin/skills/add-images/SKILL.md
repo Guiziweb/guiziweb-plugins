@@ -364,5 +364,7 @@ docker compose exec php vendor/bin/console doctrine:migrations:migrate --no-inte
 
 ```bash
 docker compose exec php vendor/bin/console cache:clear
-docker compose exec php vendor/bin/console sylius:debug:resource | grep {model_snake}_image
+docker compose exec php vendor/bin/console sylius:debug:resource '{Namespace}\Entity\{ModelName}Image'
 ```
+
+The image resource metadata should be listed (alias `{plugin_alias}.{model_snake}_image`, model class, form type).

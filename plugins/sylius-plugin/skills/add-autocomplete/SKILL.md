@@ -1,6 +1,6 @@
 ---
 name: add-autocomplete
-description: Add an admin autocomplete form type for a Sylius Resource (translatable or not), usable in other forms via a form extension
+description: Add an admin autocomplete form type for a Sylius Resource (translatable or not), optionally injected into another form via an extension
 argument-hint: "[ModelName] [TargetModelName]"
 allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 ---
@@ -167,121 +167,38 @@ class {ModelName}AutocompleteType extends AbstractType
 
 ---
 
-## 3. Create a FormType extension for the target entity (optional)
+## 3. Inject the autocomplete into the target form (optional)
 
-If a `TargetModelName` was given, inject the field into an existing Sylius form via an extension.
+If a `TargetModelName` was given, expose the autocomplete as a field on that Sylius form. Run:
 
-First, identify the target FormType FQCN:
-```bash
-docker compose exec php vendor/bin/console debug:form 2>&1 | grep -i "{TargetModelName}Type"
+```
+/sylius-plugin:add-form-extension {TargetModelName} {model_snake}
 ```
 
-`src/Form/Extension/{TargetModelName}TypeExtension.php`:
+Pass `{ModelName}AutocompleteType` as the field type when prompted. For ManyToMany relations, also pass `multiple: true` in the form options.
 
-```php
-<?php
+`/sylius-plugin:add-form-extension` handles the `TypeExtension` class, `services.xml` registration, Twig template, Twig hook and translation.
 
-declare(strict_types=1);
+## 4. Add the `select_*` translation
 
-namespace {Namespace}\Form\Extension;
-
-use {Namespace}\Form\Type\{ModelName}AutocompleteType;
-use Sylius\Bundle\{TargetBundle}\Form\Type\{TargetModelName}Type;
-use Symfony\Component\Form\AbstractTypeExtension;
-use Symfony\Component\Form\FormBuilderInterface;
-
-final class {TargetModelName}TypeExtension extends AbstractTypeExtension
-{
-    public function buildForm(FormBuilderInterface $builder, array $options): void
-    {
-        $builder->add('{model_snake}', {ModelName}AutocompleteType::class, [
-            'label' => '{plugin_alias}.form.{target_model_snake}.{model_snake}',
-            'required' => false,
-            // 'multiple' => true,  // uncomment for ManyToMany
-        ]);
-    }
-
-    public static function getExtendedTypes(): iterable
-    {
-        return [{TargetModelName}Type::class];
-    }
-}
-```
-
-Register in `config/services.xml`:
-
-```xml
-<service id="{plugin_alias}.form.extension.{target_model_snake}_type"
-         class="{Namespace}\Form\Extension\{TargetModelName}TypeExtension">
-    <tag name="form.type_extension" />
-</service>
-```
-
-> The autocomplete field also supports `'multiple' => true` for selecting several entities (ManyToMany relations).
-
----
-
-## 4. Add Twig template + hook (optional)
-
-Create `templates/admin/{target_model_snake}/form/sections/general/{model_snake}.html.twig`:
-
-```twig
-{{ form_row(hookable_metadata.context.form.{model_snake}) }}
-```
-
-Identify available section hook names:
-```bash
-docker compose exec php vendor/bin/console debug:config sylius_twig_hooks 2>&1 | grep "{target_model_snake}.*create\|{target_model_snake}.*update" | head -20
-```
-
-Create or update `config/twig_hooks/admin/{target_model_snake}.yaml`:
-
-```yaml
-sylius_twig_hooks:
-    hooks:
-        'sylius_admin.{target_model_snake}.create.content.form.sections.general':
-            {model_snake}:
-                template: '@{BundleName}/admin/{target_model_snake}/form/sections/general/{model_snake}.html.twig'
-                priority: -100
-
-        'sylius_admin.{target_model_snake}.update.content.form.sections.general':
-            {model_snake}:
-                template: '@{BundleName}/admin/{target_model_snake}/form/sections/general/{model_snake}.html.twig'
-                priority: -100
-```
-
-> Use a negative priority to place the field at the bottom without renumbering existing entries.
-
----
-
-## 5. Add translation keys
-
-In `translations/messages.en_US.yaml`:
+In `translations/messages.en_US.yaml` add the placeholder / select-a-* label used by the autocomplete UI:
 
 ```yaml
 {plugin_alias}:
-    form:
-        {target_model_snake}:
-            {model_snake}: 'Related {ModelName}'
     ui:
         select_{model_snake}: 'Select a {ModelName}'
 ```
 
 ---
 
-## 6. Verify
+## 5. Verify
 
 ```bash
 docker compose exec php vendor/bin/console cache:clear
-docker compose exec php vendor/bin/console debug:container --tag=ux.entity_autocomplete_field 2>&1 | grep {model_snake}
+docker compose exec php vendor/bin/console debug:container '{plugin_alias}.form.type.{model_snake}_autocomplete'
 ```
 
-Expected:
-```
-{plugin_alias}.form.type.{model_snake}_autocomplete   {plugin_alias}_{model_snake}   {Namespace}\Form\Type\{ModelName}AutocompleteType
-```
-
-Then open the target entity's admin form and type in the autocomplete field to confirm results appear.
+The service should resolve to `{Namespace}\Form\Type\{ModelName}AutocompleteType` and its `Tags` row should include `form.type` and `ux.entity_autocomplete_field` (with alias `{plugin_alias}_{model_snake}`).
 
 ---
 

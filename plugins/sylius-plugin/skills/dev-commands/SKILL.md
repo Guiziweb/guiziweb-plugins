@@ -42,6 +42,8 @@ docker compose run --rm php vendor/bin/console doctrine:migrations:migrate --no-
 docker compose run --rm php vendor/bin/console doctrine:migrations:diff --namespace=DoctrineMigrations
 docker compose run --rm php vendor/bin/console debug:container <service>
 docker compose run --rm php vendor/bin/console debug:router
+docker compose run --rm php vendor/bin/console sylius:debug:resource '<FQCN>'
+docker compose run --rm php vendor/bin/console sylius:debug:grid '<FQCN>'
 ```
 
 ---
