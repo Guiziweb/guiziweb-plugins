@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/Guiziweb/guiziweb-plugins/compare/sylius-v1.7.0...sylius-v2.0.0) (2026-04-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* **sylius:** plugin renamed from sylius-plugin to sylius. Users must reinstall with `claude plugin install sylius`.
+
+### Features
+
+* **sylius:** rename plugin to sylius and unify plugin/app contexts ([3edb2e6](https://github.com/Guiziweb/guiziweb-plugins/commit/3edb2e6f64a313761707bf83c68590f36a270a95))
+
 ## [1.7.0](https://github.com/Guiziweb/guiziweb-plugins/compare/sylius-plugin-v1.6.0...sylius-plugin-v1.7.0) (2026-04-16)
 
 

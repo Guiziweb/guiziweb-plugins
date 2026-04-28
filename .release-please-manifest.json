@@ -1,4 +1,4 @@
 {
-  "plugins/sylius": "1.7.0",
+  "plugins/sylius": "2.0.0",
   "plugins/sylius-stack": "1.1.0"
 }
