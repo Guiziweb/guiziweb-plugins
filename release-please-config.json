@@ -1,8 +1,8 @@
 {
   "packages": {
-    "plugins/sylius-plugin": {
+    "plugins/sylius": {
       "release-type": "simple",
-      "component": "sylius-plugin",
+      "component": "sylius",
       "bump-minor-pre-major": true,
       "extra-files": [
         {

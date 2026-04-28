@@ -1,9 +1,0 @@
-{
-  "name": "sylius-plugin",
-  "description": "Create new Sylius plugins from scratch with Docker environment",
-  "version": "1.7.0",
-  "author": {
-    "name": "Guiziweb",
-    "email": "guiziweb@gmail.com"
-  }
-}

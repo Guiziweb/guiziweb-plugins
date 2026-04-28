@@ -11,10 +11,10 @@
   },
   "plugins": [
     {
-      "name": "sylius-plugin",
-      "source": "./plugins/sylius-plugin",
-      "description": "Create new Sylius plugins from scratch with Docker environment",
-      "version": "1.6.0",
+      "name": "sylius",
+      "source": "./plugins/sylius",
+      "description": "Skills for Sylius plugin and application development",
+      "version": "1.7.0",
       "author": {
         "name": "Guiziweb",
         "email": "guiziweb@gmail.com"
@@ -24,10 +24,7 @@
       "license": "MIT",
       "keywords": [
         "sylius",
-        "plugin",
-        "initialization",
-        "docker",
-        "php"
+        "plugin"
       ],
       "category": "productivity"
     },
@@ -35,7 +32,7 @@
       "name": "sylius-stack",
       "source": "./plugins/sylius-stack",
       "description": "Build Symfony apps with the Sylius Stack (Resource, Grid, Bootstrap Admin UI, Twig Hooks)",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": {
         "name": "Guiziweb",
         "email": "guiziweb@gmail.com"
@@ -45,11 +42,7 @@
       "license": "MIT",
       "keywords": [
         "sylius",
-        "stack",
-        "symfony",
-        "resource",
-        "grid",
-        "admin"
+        "stack"
       ],
       "category": "productivity"
     }
