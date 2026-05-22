@@ -1,26 +1,27 @@
 # Guiziweb Plugins
 
-Claude Code plugins for Sylius plugin and application development.
+Claude Code plugins by Guiziweb.
+
+**Available plugins:**
+
+- [`sylius`](./plugins/sylius/) — Skills for Sylius plugin and application development
+- [`sylius-stack`](./plugins/sylius-stack/) — Skills for building Symfony apps with the Sylius Stack
+- [`claude-hud`](./plugins/claude-hud/README.md) — Minimal context + rate-limits statusline HUD
 
 ## Installation
 
+Add the marketplace once, then install the plugins you want:
+
 ```bash
 claude plugin marketplace add Guiziweb/guiziweb-plugins
-```
-
-Then install a plugin:
-
-```bash
-claude plugin install sylius
-claude plugin install sylius-stack
+claude plugin install <plugin-name>
 ```
 
 ## Update
 
 ```bash
 claude plugin marketplace update guiziweb-plugins
-claude plugin update sylius
-claude plugin update sylius-stack
+claude plugin update <plugin-name>
 ```
 
 ## sylius — Skills
@@ -78,6 +79,5 @@ Build Symfony apps with the Sylius Stack (Resource, Grid, Bootstrap Admin UI, Tw
 ## Local Development
 
 ```bash
-claude --plugin-dir /path/to/guiziweb-plugins/plugins/sylius/
-claude --plugin-dir /path/to/guiziweb-plugins/plugins/sylius-stack/
+claude --plugin-dir /path/to/guiziweb-plugins/plugins/<plugin-name>/
 ```

@@ -23,6 +23,18 @@
           "jsonpath": "$.version"
         }
       ]
+    },
+    "plugins/claude-hud": {
+      "release-type": "node",
+      "component": "claude-hud",
+      "bump-minor-pre-major": true,
+      "extra-files": [
+        {
+          "type": "json",
+          "path": ".claude-plugin/plugin.json",
+          "jsonpath": "$.version"
+        }
+      ]
     }
   }
 }
