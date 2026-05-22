@@ -50,7 +50,7 @@
       "name": "claude-hud",
       "source": "./plugins/claude-hud",
       "description": "Minimal statusline HUD showing the current context usage percentage",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": {
         "name": "Guiziweb",
         "email": "guiziweb@gmail.com"
