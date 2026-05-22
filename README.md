@@ -10,18 +10,28 @@ Claude Code plugins by Guiziweb.
 
 ## Installation
 
-Add the marketplace once, then install the plugins you want:
-
 ```bash
 claude plugin marketplace add Guiziweb/guiziweb-plugins
-claude plugin install <plugin-name>
+claude plugin install sylius@guiziweb-plugins
+claude plugin install sylius-stack@guiziweb-plugins
+claude plugin install claude-hud@guiziweb-plugins
 ```
 
 ## Update
 
 ```bash
 claude plugin marketplace update guiziweb-plugins
-claude plugin update <plugin-name>
+claude plugin update sylius@guiziweb-plugins
+claude plugin update sylius-stack@guiziweb-plugins
+claude plugin update claude-hud@guiziweb-plugins
+```
+
+## Uninstall
+
+```bash
+claude plugin uninstall sylius@guiziweb-plugins
+claude plugin uninstall sylius-stack@guiziweb-plugins
+claude plugin uninstall claude-hud@guiziweb-plugins
 ```
 
 ## sylius — Skills
