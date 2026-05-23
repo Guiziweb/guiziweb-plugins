@@ -9,7 +9,7 @@ allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 
 Ask the user for the ModelName if not provided, and the **translatable fields** (the fields that vary per locale — they move from the main entity to the translation entity).
 
-**Prerequisites:** `add-model` and `add-form` must have been run first.
+**Prerequisites:** `/sylius-app:add-model` and `/sylius-app:add-form` must have been run first.
 
 ## How Sylius handles translatable entities
 
@@ -24,7 +24,7 @@ Sylius injects the `OneToMany`/`ManyToOne` relation between the entity and its t
 
 declare(strict_types=1);
 
-namespace $SYLIUS_NAMESPACE\Entity\{ModelName};
+namespace App\Entity\{ModelName};
 
 use Sylius\Resource\Model\ResourceInterface;
 use Sylius\Resource\Model\TranslationInterface;
@@ -44,13 +44,13 @@ interface {ModelName}TranslationInterface extends ResourceInterface, Translation
 
 declare(strict_types=1);
 
-namespace $SYLIUS_NAMESPACE\Entity\{ModelName};
+namespace App\Entity\{ModelName};
 
 use Doctrine\ORM\Mapping as ORM;
 use Sylius\Resource\Model\AbstractTranslation;
 
 #[ORM\Entity]
-#[ORM\Table(name: '${SYLIUS_PREFIX}_{model_snake}_translation')]
+#[ORM\Table(name: 'app_{model_snake}_translation')]
 class {ModelName}Translation extends AbstractTranslation implements {ModelName}TranslationInterface
 {
     #[ORM\Id]
@@ -111,7 +111,7 @@ class {ModelName} implements {ModelName}Interface, TranslatableInterface
 
 declare(strict_types=1);
 
-namespace $SYLIUS_NAMESPACE\Form\Type\{ModelName};
+namespace App\Form\Type\{ModelName};
 
 use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -122,18 +122,18 @@ final class {ModelName}TranslationType extends AbstractResourceType
     {
         $builder
             // add translatable fields with labels
-            // ->add('title', TextType::class, ['label' => '${SYLIUS_PREFIX}.form.{model_snake}.title'])
+            // ->add('title', TextType::class, ['label' => 'app.form.{model_snake}.title'])
         ;
     }
 
     public function getBlockPrefix(): string
     {
-        return '${SYLIUS_PREFIX}_{model_snake}_translation';
+        return 'app_{model_snake}_translation';
     }
 }
 ```
 
-Labels for translation fields share the same `${SYLIUS_PREFIX}.form.{model_snake}.*` namespace as the main FormType — the resource is the same, the field lives there regardless of whether it's translatable.
+Labels for translation fields share the same `app.form.{model_snake}.*` namespace as the main FormType — the resource is the same, the field lives there regardless of whether it's translatable.
 
 ## 5. Update the main FormType
 
@@ -157,10 +157,10 @@ Add the translation form type:
 
 ```yaml
 services:
-    ${SYLIUS_PREFIX}.form.type.{model_snake}_translation:
-        class: $SYLIUS_NAMESPACE\Form\Type\{ModelName}\{ModelName}TranslationType
+    app.form.type.{model_snake}_translation:
+        class: App\Form\Type\{ModelName}\{ModelName}TranslationType
         arguments:
-            - '%${SYLIUS_PREFIX}.model.{model_snake}_translation.class%'
+            - '%app.model.{model_snake}_translation.class%'
             - ['sylius']
         tags:
             - { name: form.type }
@@ -169,43 +169,43 @@ services:
 The `ResourceFormComponent` provides the live-component wiring consumed by the `create.content` hook below. Register it only if it doesn't already exist:
 
 ```bash
-$SYLIUS_CONSOLE debug:container --tag=sylius.live_component.admin | grep '${SYLIUS_PREFIX}:{model_snake}:form'
+bin/console debug:container --tag=sylius.live_component.admin | grep 'app:{model_snake}:form'
 ```
 
 If the command returns nothing, append to `config/services.yaml`:
 
 ```yaml
 services:
-    ${SYLIUS_PREFIX}.twig.component.{model_snake}.form:
+    app.twig.component.{model_snake}.form:
         class: Sylius\Bundle\UiBundle\Twig\Component\ResourceFormComponent
         autoconfigure: false    # Sylius-Standard's `_defaults: autoconfigure: true` makes Symfony UX try to auto-name this component before Sylius's compiler pass tags it
         arguments:
-            - '@${SYLIUS_PREFIX}.repository.{model_snake}'
+            - '@app.repository.{model_snake}'
             - '@form.factory'
-            - '%${SYLIUS_PREFIX}.model.{model_snake}.class%'
-            - $SYLIUS_NAMESPACE\Form\Type\{ModelName}\{ModelName}Type
+            - '%app.model.{model_snake}.class%'
+            - App\Form\Type\{ModelName}\{ModelName}Type
         tags:
-            - { name: sylius.live_component.admin, key: '${SYLIUS_PREFIX}:{model_snake}:form' }
+            - { name: sylius.live_component.admin, key: 'app:{model_snake}:form' }
 ```
 
 ## 7. Update the resource config
 
-Edit `config/packages/sylius_resource.yaml`. Add the `translation:` block to the existing `${SYLIUS_PREFIX}.{model_snake}` entry, and add `form:` under `classes:` if not already there:
+Edit `config/packages/sylius_resource.yaml`. Add the `translation:` block to the existing `app.{model_snake}` entry, and add `form:` under `classes:` if not already there:
 
 ```yaml
 sylius_resource:
     resources:
-        ${SYLIUS_PREFIX}.{model_snake}:
+        app.{model_snake}:
             driver: doctrine/orm
             classes:
-                model: $SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}
-                interface: $SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}Interface
-                form: $SYLIUS_NAMESPACE\Form\Type\{ModelName}\{ModelName}Type
+                model: App\Entity\{ModelName}\{ModelName}
+                interface: App\Entity\{ModelName}\{ModelName}Interface
+                form: App\Form\Type\{ModelName}\{ModelName}Type
             translation:
                 classes:
-                    model: $SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}Translation
-                    interface: $SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}TranslationInterface
-                    form: $SYLIUS_NAMESPACE\Form\Type\{ModelName}\{ModelName}TranslationType
+                    model: App\Entity\{ModelName}\{ModelName}Translation
+                    interface: App\Entity\{ModelName}\{ModelName}TranslationInterface
+                    form: App\Form\Type\{ModelName}\{ModelName}TranslationType
 ```
 
 ## 8. Templates
@@ -274,8 +274,6 @@ imports:
     - { resource: "twig_hooks/**/*.yaml" }
 ```
 
-Plugin context: same in `tests/TestApplication/config/packages/_sylius.yaml` (create if missing).
-
 ### create.yaml
 
 ```yaml
@@ -283,7 +281,7 @@ sylius_twig_hooks:
     hooks:
         'sylius_admin.{model_snake}.create.content':
             form:
-                component: '${SYLIUS_PREFIX}:{model_snake}:form'
+                component: 'app:{model_snake}:form'
                 props:
                     resource: '@=_context.resource'
                     form: '@=_context.form'
@@ -292,10 +290,10 @@ sylius_twig_hooks:
 
         'sylius_admin.{model_snake}.create.content.form.sections':
             general:
-                template: '${SYLIUS_TEMPLATE_NS}admin/{model_snake}/form/sections/general.html.twig'
+                template: 'admin/{model_snake}/form/sections/general.html.twig'
                 priority: 100
             translations:
-                template: '${SYLIUS_TEMPLATE_NS}admin/{model_snake}/form/sections/translations.html.twig'
+                template: 'admin/{model_snake}/form/sections/translations.html.twig'
                 priority: 0
 
         'sylius_admin.{model_snake}.create.content.form.sections.general':
@@ -303,13 +301,13 @@ sylius_twig_hooks:
                 enabled: false
             # one entry per non-translatable field:
             # {field_name}:
-            #     template: '${SYLIUS_TEMPLATE_NS}admin/{model_snake}/form/sections/general/{field_name}.html.twig'
+            #     template: 'admin/{model_snake}/form/sections/general/{field_name}.html.twig'
             #     priority: 0
 
         'sylius_admin.{model_snake}.create.content.form.sections.translations':
             # one entry per translatable field:
             # {field_name}:
-            #     template: '${SYLIUS_TEMPLATE_NS}admin/{model_snake}/form/sections/translations/{field_name}.html.twig'
+            #     template: 'admin/{model_snake}/form/sections/translations/{field_name}.html.twig'
             #     priority: 0
 ```
 
@@ -320,21 +318,19 @@ Same structure as `create.yaml` — replace every occurrence of `.create.` with 
 ## 10. Generate and apply the migration
 
 ```bash
-$SYLIUS_CONSOLE doctrine:migrations:diff
+bin/console doctrine:migrations:diff
 ```
 
-Plugin-only: append `--namespace=DoctrineMigrations` if the diff does not land in the plugin's migrations directory (the plugin's DI extension declares this namespace via `PrependDoctrineMigrationsTrait`).
-
 **Always review the generated migration before applying.** `doctrine:migrations:diff` captures every difference between mapping and DB — including pre-existing schema drift unrelated to your translatable model. The migration should contain only:
-- `CREATE TABLE ${SYLIUS_PREFIX}_{model_snake}_translation` with `translatable_id` FK, `locale` column, and a unique constraint on `(translatable_id, locale)`.
-- `ALTER TABLE ${SYLIUS_PREFIX}_{model_snake}` dropping the former translatable columns (no-op if the main table was never migrated with them).
+- `CREATE TABLE app_{model_snake}_translation` with `translatable_id` FK, `locale` column, and a unique constraint on `(translatable_id, locale)`.
+- `ALTER TABLE app_{model_snake}` dropping the former translatable columns (no-op if the main table was never migrated with them).
 
 If unrelated SQL is present (e.g. on Sylius core tables), trim the migration — drift belongs to the project baseline, not your skill output.
 
 Apply:
 
 ```bash
-$SYLIUS_CONSOLE doctrine:migrations:migrate --no-interaction
+bin/console doctrine:migrations:migrate --no-interaction
 ```
 
 ## 11. Translation keys
@@ -342,13 +338,13 @@ $SYLIUS_CONSOLE doctrine:migrations:migrate --no-interaction
 Get the project's default locale:
 
 ```bash
-$SYLIUS_CONSOLE debug:container --parameter=kernel.default_locale
+bin/console debug:container --parameter=kernel.default_locale
 ```
 
-Add the field labels under `${SYLIUS_PREFIX}.form.{model_snake}.*` in `translations/messages.{locale}.yaml`. The namespace is shared between non-translatable (main form) and translatable (translation form) fields — one entry per field regardless of which form it lives in:
+Add the field labels under `app.form.{model_snake}.*` in `translations/messages.{locale}.yaml`. The namespace is shared between non-translatable (main form) and translatable (translation form) fields — one entry per field regardless of which form it lives in:
 
 ```yaml
-${SYLIUS_PREFIX}:
+app:
     form:
         {model_snake}:
             name: Name              # non-translatable, lives on the main form
@@ -360,17 +356,17 @@ ${SYLIUS_PREFIX}:
 ## 12. Clear cache
 
 ```bash
-$SYLIUS_CONSOLE cache:clear
+bin/console cache:clear
 ```
 
 ## 13. Verify
 
-- [ ] `$SYLIUS_CONSOLE sylius:debug:resource '$SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}'` prints the main resource and references the translation class in its `translation.classes.model` row
-- [ ] `$SYLIUS_CONSOLE sylius:debug:resource '$SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}Translation'` prints the translation resource
-- [ ] `$SYLIUS_CONSOLE doctrine:query:sql "DESCRIBE ${SYLIUS_PREFIX}_{model_snake}_translation"` lists the expected columns (`id`, `translatable_id`, `locale`, plus translatable fields)
+- [ ] `bin/console sylius:debug:resource 'App\Entity\{ModelName}\{ModelName}'` prints the main resource and references the translation class in its `translation.classes.model` row
+- [ ] `bin/console sylius:debug:resource 'App\Entity\{ModelName}\{ModelName}Translation'` prints the translation resource
+- [ ] `bin/console doctrine:query:sql "DESCRIBE app_{model_snake}_translation"` lists the expected columns (`id`, `translatable_id`, `locale`, plus translatable fields)
 
 ## Next steps
 
-- Add admin grid → run `/sylius:add-grid`
-- Add admin routes → run `/sylius:add-routes`
-- Add admin menu → run `/sylius:add-menu`
+- Add admin grid → run `/sylius-app:add-grid`
+- Add admin routes → run `/sylius-app:add-routes`
+- Add admin menu → run `/sylius-app:add-menu`

@@ -9,7 +9,7 @@ allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 
 Ask the user for the ModelName if not provided, and the **translatable fields** (the fields that vary per locale — they move from the main entity to the translation entity).
 
-**Prerequisites:** `add-model` and `add-form` must have been run first.
+**Prerequisites:** `/sylius-plugin:add-model` and `/sylius-plugin:add-form` must have been run first.
 
 ## How Sylius handles translatable entities
 
@@ -169,7 +169,7 @@ services:
 The `ResourceFormComponent` provides the live-component wiring consumed by the `create.content` hook below. Register it only if it doesn't already exist:
 
 ```bash
-$SYLIUS_CONSOLE debug:container --tag=sylius.live_component.admin | grep '${SYLIUS_PREFIX}:{model_snake}:form'
+vendor/bin/console debug:container --tag=sylius.live_component.admin | grep '${SYLIUS_PREFIX}:{model_snake}:form'
 ```
 
 If the command returns nothing, append to `config/services.yaml`:
@@ -267,14 +267,12 @@ Hook files are split by action (`create.yaml`, `update.yaml`), one directory per
 
 Unified path: `config/packages/twig_hooks/{model_snake}/create.yaml` and `update.yaml`.
 
-First-time setup: add (or extend) an `imports:` block at the top of `config/packages/_sylius.yaml` so the split files are loaded:
+First-time setup: add (or extend) an `imports:` block at the top of `tests/TestApplication/config/packages/_sylius.yaml` (create if missing) so the split files are loaded:
 
 ```yaml
 imports:
     - { resource: "twig_hooks/**/*.yaml" }
 ```
-
-Plugin context: same in `tests/TestApplication/config/packages/_sylius.yaml` (create if missing).
 
 ### create.yaml
 
@@ -319,11 +317,11 @@ Same structure as `create.yaml` — replace every occurrence of `.create.` with 
 
 ## 10. Generate and apply the migration
 
-```bash
-$SYLIUS_CONSOLE doctrine:migrations:diff
-```
+The plugin's DI extension declares the `DoctrineMigrations` namespace via `PrependDoctrineMigrationsTrait`, so generate into it:
 
-Plugin-only: append `--namespace=DoctrineMigrations` if the diff does not land in the plugin's migrations directory (the plugin's DI extension declares this namespace via `PrependDoctrineMigrationsTrait`).
+```bash
+vendor/bin/console doctrine:migrations:diff --namespace=DoctrineMigrations
+```
 
 **Always review the generated migration before applying.** `doctrine:migrations:diff` captures every difference between mapping and DB — including pre-existing schema drift unrelated to your translatable model. The migration should contain only:
 - `CREATE TABLE ${SYLIUS_PREFIX}_{model_snake}_translation` with `translatable_id` FK, `locale` column, and a unique constraint on `(translatable_id, locale)`.
@@ -334,7 +332,7 @@ If unrelated SQL is present (e.g. on Sylius core tables), trim the migration —
 Apply:
 
 ```bash
-$SYLIUS_CONSOLE doctrine:migrations:migrate --no-interaction
+vendor/bin/console doctrine:migrations:migrate --no-interaction
 ```
 
 ## 11. Translation keys
@@ -342,7 +340,7 @@ $SYLIUS_CONSOLE doctrine:migrations:migrate --no-interaction
 Get the project's default locale:
 
 ```bash
-$SYLIUS_CONSOLE debug:container --parameter=kernel.default_locale
+vendor/bin/console debug:container --parameter=kernel.default_locale
 ```
 
 Add the field labels under `${SYLIUS_PREFIX}.form.{model_snake}.*` in `translations/messages.{locale}.yaml`. The namespace is shared between non-translatable (main form) and translatable (translation form) fields — one entry per field regardless of which form it lives in:
@@ -360,17 +358,17 @@ ${SYLIUS_PREFIX}:
 ## 12. Clear cache
 
 ```bash
-$SYLIUS_CONSOLE cache:clear
+vendor/bin/console cache:clear
 ```
 
 ## 13. Verify
 
-- [ ] `$SYLIUS_CONSOLE sylius:debug:resource '$SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}'` prints the main resource and references the translation class in its `translation.classes.model` row
-- [ ] `$SYLIUS_CONSOLE sylius:debug:resource '$SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}Translation'` prints the translation resource
-- [ ] `$SYLIUS_CONSOLE doctrine:query:sql "DESCRIBE ${SYLIUS_PREFIX}_{model_snake}_translation"` lists the expected columns (`id`, `translatable_id`, `locale`, plus translatable fields)
+- [ ] `vendor/bin/console sylius:debug:resource '$SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}'` prints the main resource and references the translation class in its `translation.classes.model` row
+- [ ] `vendor/bin/console sylius:debug:resource '$SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}Translation'` prints the translation resource
+- [ ] `vendor/bin/console doctrine:query:sql "DESCRIBE ${SYLIUS_PREFIX}_{model_snake}_translation"` lists the expected columns (`id`, `translatable_id`, `locale`, plus translatable fields)
 
 ## Next steps
 
-- Add admin grid → run `/sylius:add-grid`
-- Add admin routes → run `/sylius:add-routes`
-- Add admin menu → run `/sylius:add-menu`
+- Add admin grid → run `/sylius-plugin:add-grid`
+- Add admin routes → run `/sylius-plugin:add-routes`
+- Add admin menu → run `/sylius-plugin:add-menu`
