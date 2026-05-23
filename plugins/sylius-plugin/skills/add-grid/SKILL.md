@@ -9,13 +9,13 @@ allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 
 Ask the user for the ModelName if not provided. Read `src/**/Entity/{ModelName}/{ModelName}.php` to detect the entity's fields and relations.
 
-**Prerequisite:** the model must already exist as a Sylius Resource (run `add-model` first). To customize an existing Sylius core grid (e.g. `sylius_admin_product`), use `/sylius:extends-grid` instead.
+**Prerequisite:** the model must already exist as a Sylius Resource (run `/sylius-plugin:add-model` first). To customize an existing Sylius core grid (e.g. `sylius_admin_product`), use `/sylius-plugin:extends-grid` instead.
 
 ## 1. Setup (one-time per project)
 
 One grid file per resource at a unified path: `config/packages/grids/{model_snake}.yaml`.
 
-Add (or extend) an `imports:` block at the top of `config/packages/_sylius.yaml` (shipped by Sylius-Standard, user-editable) so the split files are loaded:
+Add (or extend) an `imports:` block at the top of `tests/TestApplication/config/packages/_sylius.yaml` (create if missing) so the split files are loaded:
 
 ```yaml
 imports:
@@ -26,14 +26,12 @@ sylius_addressing:
     # ... existing content untouched
 ```
 
-Plugin context: same pattern in `tests/TestApplication/config/packages/_sylius.yaml` (create if missing).
-
 ## 2. Ask the user
 
 Based on the entity, ask:
 - Which properties to display as columns
 - Which filters to include
-- Whether to include a `show` action (requires a show route — run `/sylius:add-routes` with a `show` operation if missing)
+- Whether to include a `show` action (requires a show route — run `/sylius-plugin:add-routes` with a `show` operation if missing)
 
 ## 3. Grid skeleton
 
@@ -121,7 +119,7 @@ Useful options:
 - `default_value: true` — pre-fill the filter (e.g. enabled-only view by default)
 - `enabled: false` — hide a filter inherited from a parent grid
 
-For an AJAX autocomplete filter on a related entity, Sylius ships two ready-to-use filter types — you do **not** need a custom filter class or to call `/sylius:add-autocomplete`:
+For an AJAX autocomplete filter on a related entity, Sylius ships two ready-to-use filter types — you do **not** need a custom filter class or to call `/sylius-plugin:add-autocomplete`:
 
 - `ux_translatable_autocomplete` — for entities with a translatable label (e.g. `Taxon.name`, `Library.name`)
 - `ux_autocomplete` — for non-translatable entities
@@ -141,7 +139,7 @@ filters:
             fields: [library.id]   # DQL path used by the filter, usually `{relation}.id`
 ```
 
-Reserve `/sylius:add-autocomplete` for exposing an autocomplete in a **form** — grid filters do not need it.
+Reserve `/sylius-plugin:add-autocomplete` for exposing an autocomplete in a **form** — grid filters do not need it.
 
 Examples:
 
@@ -202,7 +200,7 @@ For a per-row dropdown grouping several links (e.g. "Manage children"), use a `s
 Get the project's default locale:
 
 ```bash
-$SYLIUS_CONSOLE debug:container --parameter=kernel.default_locale
+vendor/bin/console debug:container --parameter=kernel.default_locale
 ```
 
 Add labels to `translations/messages.{locale}.yaml`. Grid field labels use the `grid.{model_snake}.{field}` namespace (keeps `${SYLIUS_PREFIX}.ui.*` free for Sylius's auto-generated scalar keys like `${SYLIUS_PREFIX}.ui.{model_snake}` used for page titles/breadcrumbs).
@@ -220,15 +218,15 @@ ${SYLIUS_PREFIX}:
 ## 8. Clear cache
 
 ```bash
-$SYLIUS_CONSOLE cache:clear
+vendor/bin/console cache:clear
 ```
 
 ## 9. Verify
 
-- [ ] `$SYLIUS_CONSOLE sylius:debug:grid ${SYLIUS_PREFIX}_admin_{model_snake}` prints the grid definition (fields, filters, actions as declared)
-- [ ] `$SYLIUS_CONSOLE debug:translation {locale} --domain=messages 2>&1 | grep '${SYLIUS_PREFIX}.grid.{model_snake}'` lists every label you added.
+- [ ] `vendor/bin/console sylius:debug:grid ${SYLIUS_PREFIX}_admin_{model_snake}` prints the grid definition (fields, filters, actions as declared)
+- [ ] `vendor/bin/console debug:translation {locale} --domain=messages 2>&1 | grep '${SYLIUS_PREFIX}.grid.{model_snake}'` lists every label you added.
 
 ## Next steps
 
-- Add admin routes referencing this grid → `/sylius:add-routes`
-- Add admin menu entry → `/sylius:add-menu`
+- Add admin routes referencing this grid → `/sylius-plugin:add-routes`
+- Add admin menu entry → `/sylius-plugin:add-menu`
