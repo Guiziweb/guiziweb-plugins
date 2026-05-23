@@ -54,7 +54,7 @@ If no arguments are provided, use AskUserQuestion to collect Company, PluginName
 
 ## Next steps
 
-- Start adding resources to the plugin → `/sylius:add-model`
+- Start adding resources to the plugin → `/sylius-plugin:add-model`
 - Once the plugin is feature-complete, create a GitHub repo and push
 - Publish on [Packagist](https://packagist.org/packages/submit)
 - Add a Symfony Flex recipe so integrators auto-install plugin assets
