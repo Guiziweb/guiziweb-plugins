@@ -1,6 +1,6 @@
 ---
 name: add-model
-description: Add a Doctrine entity as a Sylius Resource
+description: Add a Doctrine entity as a Sylius Resource in a Sylius application
 argument-hint: "[ModelName]"
 allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 ---
@@ -25,7 +25,7 @@ Group by domain like Sylius-Standard (`src/Entity/Product/`, `src/Entity/Custome
 
 declare(strict_types=1);
 
-namespace $SYLIUS_NAMESPACE\Entity\{ModelName};
+namespace App\Entity\{ModelName};
 
 use Sylius\Resource\Model\ResourceInterface;
 
@@ -45,12 +45,12 @@ interface {ModelName}Interface extends ResourceInterface
 
 declare(strict_types=1);
 
-namespace $SYLIUS_NAMESPACE\Entity\{ModelName};
+namespace App\Entity\{ModelName};
 
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: '${SYLIUS_PREFIX}_{model_snake}')]
+#[ORM\Table(name: 'app_{model_snake}')]
 class {ModelName} implements {ModelName}Interface
 {
     #[ORM\Id]
@@ -78,7 +78,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 private ?string $title = null;
 ```
 
-For relations to another resource in the same project, always use the target's **interface** as `targetEntity` — Sylius's `ResolveTargetEntityListener` resolves it at runtime from the `interface:` key in the resource config. In forms, `EntityType` does not go through this listener — pass the concrete class or use `/sylius:add-autocomplete`.
+For relations to another resource in your app, always use the target's **interface** as `targetEntity` — Sylius's `ResolveTargetEntityListener` resolves it at runtime from the `interface:` key in the resource config. In forms, `EntityType` does not go through this listener — pass the concrete class or use `/sylius-app:add-autocomplete`.
 
 **ManyToOne** — `{ModelName}` belongs to one `{RelatedModel}`:
 
@@ -135,65 +135,53 @@ public function __construct()
 }
 ```
 
-To reach a Sylius core entity from a plugin (e.g. attach plugin data to `Product`), do not add a relation on the plugin entity — use `/sylius:extends-model` + a plugin-provided trait instead (the FK lives on the extended core entity).
+To relate to a Sylius core entity (e.g. attach data to `Product`), use its interface (`Sylius\Component\Core\Model\ProductInterface`) as `targetEntity`. The interface resolves at runtime to whichever class is configured — yours if you customized it via `/sylius-app:extends-model`, otherwise the Sylius default.
 
 ## 3. Register as Sylius Resource
 
-Append to the project's `sylius_resource.yaml` under `sylius_resource.resources`:
-- **App context**: `config/packages/sylius_resource.yaml` (shipped by Sylius-Standard with a `#app.book:` commented hint)
-- **Plugin context**: `config/packages/sylius_resource.yaml` at the **plugin root** (create if missing). The `PluginSkeleton` test-app loads only `tests/TestApplication/config/config.yaml` (via `SYLIUS_TEST_APP_CONFIGS_TO_IMPORT`), which itself imports `@{PluginBundle}/config/config.yaml` — so the plugin's own config has to pull in the packages dir. Add once to the plugin's `config/config.yaml`: `- { resource: "packages/*.yaml" }`.
+Append to `config/packages/sylius_resource.yaml` under `sylius_resource.resources` (Sylius-Standard ships this file with a `#app.book:` commented hint):
 
 ```yaml
 sylius_resource:
     resources:
-        ${SYLIUS_PREFIX}.{model_snake}:
+        app.{model_snake}:
             driver: doctrine/orm
             classes:
-                model: $SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}
-                interface: $SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}Interface
+                model: App\Entity\{ModelName}\{ModelName}
+                interface: App\Entity\{ModelName}\{ModelName}Interface
 ```
 
 ## 4. Generate and apply the migration
 
-**If `$SYLIUS_CONTEXT = plugin`** — the plugin's DI extension declares the `DoctrineMigrations` namespace via `PrependDoctrineMigrationsTrait`, so generate into it:
-
 ```bash
-$SYLIUS_CONSOLE doctrine:migrations:diff --namespace=DoctrineMigrations
+bin/console doctrine:migrations:diff
 ```
 
-**If `$SYLIUS_CONTEXT = app`** — use the app's default migrations namespace:
+**Always review the generated migration before applying.** `doctrine:migrations:diff` captures **every** difference between mapping and DB — including pre-existing schema drift unrelated to your model (e.g. `ALTER TABLE messenger_messages ...` from a Sylius update never migrated locally). The migration should only contain `CREATE TABLE app_{model_snake}` + its indexes/FKs.
 
-```bash
-$SYLIUS_CONSOLE doctrine:migrations:diff
-```
-
-**Always review the generated migration before applying.** `doctrine:migrations:diff` captures **every** difference between mapping and DB — including pre-existing schema drift unrelated to your model (e.g. `ALTER TABLE messenger_messages ...` from a Sylius update never migrated locally). The migration should only contain `CREATE TABLE ${SYLIUS_PREFIX}_{model_snake}` + its indexes/FKs.
-
-If unrelated SQL is present:
-- **Plugin context** — manually trim the migration `up()`/`down()` to keep only your table. The drift belongs to the test app baseline, not your plugin.
-- **App context** — investigate the drift before merging. Either generate a separate baseline migration to absorb it, or trim and document why.
+If unrelated SQL is present, investigate the drift before merging. Either generate a separate baseline migration to absorb it, or trim the diff and document why.
 
 Then apply:
 
 ```bash
-$SYLIUS_CONSOLE doctrine:migrations:migrate --no-interaction
+bin/console doctrine:migrations:migrate --no-interaction
 ```
 
 ## 5. Clear cache
 
 ```bash
-$SYLIUS_CONSOLE cache:clear
+bin/console cache:clear
 ```
 
 ## 6. Verify
 
-- [ ] `$SYLIUS_CONSOLE sylius:debug:resource '$SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}'` prints the resource metadata (alias `${SYLIUS_PREFIX}.{model_snake}`, model + interface classes)
-- [ ] `$SYLIUS_CONSOLE doctrine:query:sql "DESCRIBE ${SYLIUS_PREFIX}_{model_snake}"` lists the expected columns (`id`, plus user fields)
+- [ ] `bin/console sylius:debug:resource 'App\Entity\{ModelName}\{ModelName}'` prints the resource metadata (alias `app.{model_snake}`, model + interface classes)
+- [ ] `bin/console doctrine:query:sql "DESCRIBE app_{model_snake}"` lists the expected columns (`id`, plus user fields)
 
 ---
 
 ## Next steps
 
-1. `/sylius:add-form` to add an admin form
-2. `/sylius:add-translatable-model` if the model needs translations
-3. `/sylius:add-grid`, then `/sylius:add-routes`, then `/sylius:add-menu`
+1. `/sylius-app:add-form` to add an admin form
+2. `/sylius-app:add-translatable-model` if the model needs translations
+3. `/sylius-app:add-grid`, then `/sylius-app:add-routes`, then `/sylius-app:add-menu`
