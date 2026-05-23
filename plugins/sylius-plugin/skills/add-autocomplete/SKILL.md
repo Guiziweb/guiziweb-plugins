@@ -7,7 +7,7 @@ allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 
 # Add an Autocomplete Type for a Sylius Resource
 
-This skill is for exposing a resource as an autocomplete **in a form**. For a grid filter, use `ux_autocomplete` / `ux_translatable_autocomplete` directly in the grid YAML (see `/sylius:add-grid`) — no custom form type needed.
+This skill is for exposing a resource as an autocomplete **in a form**. For a grid filter, use `ux_autocomplete` / `ux_translatable_autocomplete` directly in the grid YAML (see `/sylius-plugin:add-grid`) — no custom form type needed.
 
 Ask the user for:
 - **ModelName**: the resource to make searchable (e.g. `Article`)
@@ -15,7 +15,7 @@ Ask the user for:
 
 Read `src/Entity/{ModelName}/{ModelName}.php` to detect the entity's fields and whether it uses `TranslatableTrait`.
 
-**Prerequisites:** `add-model` (and `add-translatable-model` if applicable) must have been run first.
+**Prerequisites:** `/sylius-plugin:add-model` (and `/sylius-plugin:add-translatable-model` if applicable) must have been run first.
 
 ## Key rules
 
@@ -172,19 +172,19 @@ services:
 If a `TargetModelName` was given, expose the autocomplete as a field on that Sylius form. Run:
 
 ```
-/sylius:extends-form {TargetModelName} {model_snake}
+/sylius-plugin:extends-form {TargetModelName} {model_snake}
 ```
 
 Pass `{ModelName}AutocompleteType` as the field type when prompted. For ManyToMany relations, also pass `multiple: true` in the form options.
 
-`/sylius:extends-form` handles the `TypeExtension` class, service registration, Twig template, Twig hook and translation.
+`/sylius-plugin:extends-form` handles the `TypeExtension` class, service registration, Twig template, Twig hook and translation.
 
 ## 4. Add the `select_*` translation
 
 Get the project's default locale:
 
 ```bash
-$SYLIUS_CONSOLE debug:container --parameter=kernel.default_locale
+vendor/bin/console debug:container --parameter=kernel.default_locale
 ```
 
 Add the placeholder label used by the autocomplete UI to `translations/messages.{locale}.yaml`:
@@ -198,14 +198,14 @@ ${SYLIUS_PREFIX}:
 ## 5. Clear cache
 
 ```bash
-$SYLIUS_CONSOLE cache:clear
+vendor/bin/console cache:clear
 ```
 
 ## 6. Verify
 
-- [ ] `$SYLIUS_CONSOLE debug:form "$SYLIUS_NAMESPACE\Form\Type\{ModelName}\{ModelName}AutocompleteType"` shows the type extends the parent (`TranslatableAutocompleteType` or `BaseEntityAutocompleteType`)
-- [ ] `$SYLIUS_CONSOLE debug:container --tag=ux.entity_autocomplete_field | grep '${SYLIUS_PREFIX}_{model_snake}'` finds the alias in the registered autocomplete fields
-- [ ] `$SYLIUS_CONSOLE debug:translation {locale} --domain=messages 2>&1 | grep '${SYLIUS_PREFIX}.ui.select_{model_snake}'` finds the placeholder key.
+- [ ] `vendor/bin/console debug:form "$SYLIUS_NAMESPACE\Form\Type\{ModelName}\{ModelName}AutocompleteType"` shows the type extends the parent (`TranslatableAutocompleteType` or `BaseEntityAutocompleteType`)
+- [ ] `vendor/bin/console debug:container --tag=ux.entity_autocomplete_field | grep '${SYLIUS_PREFIX}_{model_snake}'` finds the alias in the registered autocomplete fields
+- [ ] `vendor/bin/console debug:translation {locale} --domain=messages 2>&1 | grep '${SYLIUS_PREFIX}.ui.select_{model_snake}'` finds the placeholder key.
 
 ---
 

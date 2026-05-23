@@ -7,7 +7,7 @@ allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 
 # Add an Autocomplete Type for a Sylius Resource
 
-This skill is for exposing a resource as an autocomplete **in a form**. For a grid filter, use `ux_autocomplete` / `ux_translatable_autocomplete` directly in the grid YAML (see `/sylius:add-grid`) — no custom form type needed.
+This skill is for exposing a resource as an autocomplete **in a form**. For a grid filter, use `ux_autocomplete` / `ux_translatable_autocomplete` directly in the grid YAML (see `/sylius-app:add-grid`) — no custom form type needed.
 
 Ask the user for:
 - **ModelName**: the resource to make searchable (e.g. `Article`)
@@ -15,7 +15,7 @@ Ask the user for:
 
 Read `src/Entity/{ModelName}/{ModelName}.php` to detect the entity's fields and whether it uses `TranslatableTrait`.
 
-**Prerequisites:** `add-model` (and `add-translatable-model` if applicable) must have been run first.
+**Prerequisites:** `/sylius-app:add-model` (and `/sylius-app:add-translatable-model` if applicable) must have been run first.
 
 ## Key rules
 
@@ -30,7 +30,7 @@ Read `src/Entity/{ModelName}/{ModelName}.php` to detect the entity's fields and 
 - Set `searchable_fields` via `$resolver->setDefault('searchable_fields', fn(Options $options) => [...])`
 
 ### Always
-- Inject the model class via constructor (`%${SYLIUS_PREFIX}.model.{model_snake}.class%`)
+- Inject the model class via constructor (`%app.model.{model_snake}.class%`)
 - Register explicitly in `services.yaml` with both `form.type` and `ux.entity_autocomplete_field` tags — PHP attributes alone are not enough without autoconfigure
 - `filter_query` is a PHP callable — it can NOT be passed via `extra_options` (only scalars/arrays travel via URL). Define it inside `configureOptions` instead.
 
@@ -45,7 +45,7 @@ Read `src/Entity/{ModelName}/{ModelName}.php` to detect the entity's fields and 
 
 declare(strict_types=1);
 
-namespace $SYLIUS_NAMESPACE\Form\Type\{ModelName};
+namespace App\Form\Type\{ModelName};
 
 use Doctrine\ORM\QueryBuilder;
 use Sylius\Bundle\AdminBundle\Form\Type\TranslatableAutocompleteType;
@@ -56,7 +56,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\UX\Autocomplete\Form\AsEntityAutocompleteField;
 
 #[AsEntityAutocompleteField(
-    alias: '${SYLIUS_PREFIX}_{model_snake}',
+    alias: 'app_{model_snake}',
     route: 'sylius_admin_entity_autocomplete',
 )]
 class {ModelName}AutocompleteType extends AbstractType
@@ -86,7 +86,7 @@ class {ModelName}AutocompleteType extends AbstractType
 
     public function getBlockPrefix(): string
     {
-        return '${SYLIUS_PREFIX}_{model_snake}_autocomplete';
+        return 'app_{model_snake}_autocomplete';
     }
 
     public function getParent(): string
@@ -105,7 +105,7 @@ class {ModelName}AutocompleteType extends AbstractType
 
 declare(strict_types=1);
 
-namespace $SYLIUS_NAMESPACE\Form\Type\{ModelName};
+namespace App\Form\Type\{ModelName};
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\Options;
@@ -114,7 +114,7 @@ use Symfony\UX\Autocomplete\Form\AsEntityAutocompleteField;
 use Symfony\UX\Autocomplete\Form\BaseEntityAutocompleteType;
 
 #[AsEntityAutocompleteField(
-    alias: '${SYLIUS_PREFIX}_{model_snake}',
+    alias: 'app_{model_snake}',
     route: 'sylius_admin_entity_autocomplete',
 )]
 class {ModelName}AutocompleteType extends AbstractType
@@ -140,7 +140,7 @@ class {ModelName}AutocompleteType extends AbstractType
 
     public function getBlockPrefix(): string
     {
-        return '${SYLIUS_PREFIX}_{model_snake}_autocomplete';
+        return 'app_{model_snake}_autocomplete';
     }
 
     public function getParent(): string
@@ -158,13 +158,13 @@ Add to `config/services.yaml`:
 
 ```yaml
 services:
-    ${SYLIUS_PREFIX}.form.type.{model_snake}_autocomplete:
-        class: $SYLIUS_NAMESPACE\Form\Type\{ModelName}\{ModelName}AutocompleteType
+    app.form.type.{model_snake}_autocomplete:
+        class: App\Form\Type\{ModelName}\{ModelName}AutocompleteType
         arguments:
-            - '%${SYLIUS_PREFIX}.model.{model_snake}.class%'
+            - '%app.model.{model_snake}.class%'
         tags:
             - { name: form.type }
-            - { name: ux.entity_autocomplete_field, alias: '${SYLIUS_PREFIX}_{model_snake}' }
+            - { name: ux.entity_autocomplete_field, alias: 'app_{model_snake}' }
 ```
 
 ## 3. Inject the autocomplete into the target form (optional)
@@ -172,25 +172,25 @@ services:
 If a `TargetModelName` was given, expose the autocomplete as a field on that Sylius form. Run:
 
 ```
-/sylius:extends-form {TargetModelName} {model_snake}
+/sylius-app:extends-form {TargetModelName} {model_snake}
 ```
 
 Pass `{ModelName}AutocompleteType` as the field type when prompted. For ManyToMany relations, also pass `multiple: true` in the form options.
 
-`/sylius:extends-form` handles the `TypeExtension` class, service registration, Twig template, Twig hook and translation.
+`/sylius-app:extends-form` handles the `TypeExtension` class, service registration, Twig template, Twig hook and translation.
 
 ## 4. Add the `select_*` translation
 
 Get the project's default locale:
 
 ```bash
-$SYLIUS_CONSOLE debug:container --parameter=kernel.default_locale
+bin/console debug:container --parameter=kernel.default_locale
 ```
 
 Add the placeholder label used by the autocomplete UI to `translations/messages.{locale}.yaml`:
 
 ```yaml
-${SYLIUS_PREFIX}:
+app:
     ui:
         select_{model_snake}: 'Select a {ModelName}'
 ```
@@ -198,14 +198,14 @@ ${SYLIUS_PREFIX}:
 ## 5. Clear cache
 
 ```bash
-$SYLIUS_CONSOLE cache:clear
+bin/console cache:clear
 ```
 
 ## 6. Verify
 
-- [ ] `$SYLIUS_CONSOLE debug:form "$SYLIUS_NAMESPACE\Form\Type\{ModelName}\{ModelName}AutocompleteType"` shows the type extends the parent (`TranslatableAutocompleteType` or `BaseEntityAutocompleteType`)
-- [ ] `$SYLIUS_CONSOLE debug:container --tag=ux.entity_autocomplete_field | grep '${SYLIUS_PREFIX}_{model_snake}'` finds the alias in the registered autocomplete fields
-- [ ] `$SYLIUS_CONSOLE debug:translation {locale} --domain=messages 2>&1 | grep '${SYLIUS_PREFIX}.ui.select_{model_snake}'` finds the placeholder key.
+- [ ] `bin/console debug:form "App\Form\Type\{ModelName}\{ModelName}AutocompleteType"` shows the type extends the parent (`TranslatableAutocompleteType` or `BaseEntityAutocompleteType`)
+- [ ] `bin/console debug:container --tag=ux.entity_autocomplete_field | grep 'app_{model_snake}'` finds the alias in the registered autocomplete fields
+- [ ] `bin/console debug:translation {locale} --domain=messages 2>&1 | grep 'app.ui.select_{model_snake}'` finds the placeholder key.
 
 ---
 
