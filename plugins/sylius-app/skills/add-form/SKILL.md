@@ -9,7 +9,7 @@ allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 
 Ask the user for the ModelName if not provided. Read `src/**/Entity/{ModelName}/{ModelName}.php` to detect the entity's fields.
 
-**Prerequisite:** the model must already exist as a Sylius Resource (run `add-model` first).
+**Prerequisite:** the model must already exist as a Sylius Resource (run `/sylius-app:add-model` first).
 
 ## 1. Create the FormType
 
@@ -20,7 +20,7 @@ Ask the user for the ModelName if not provided. Read `src/**/Entity/{ModelName}/
 
 declare(strict_types=1);
 
-namespace $SYLIUS_NAMESPACE\Form\Type\{ModelName};
+namespace App\Form\Type\{ModelName};
 
 use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -36,20 +36,20 @@ final class {ModelName}Type extends AbstractResourceType
 
     public function getBlockPrefix(): string
     {
-        return '${SYLIUS_PREFIX}_{model_snake}';
+        return 'app_{model_snake}';
     }
 }
 ```
 
-Read the entity fields and add the appropriate Symfony form types for each one (e.g. `TextType`, `TextareaType`, `IntegerType`, `CheckboxType`, etc.). Label each field with `${SYLIUS_PREFIX}.form.{model_snake}.{field}`:
+Read the entity fields and add the appropriate Symfony form types for each one (e.g. `TextType`, `TextareaType`, `IntegerType`, `CheckboxType`, etc.). Label each field with `app.form.{model_snake}.{field}`:
 
 ```php
 $builder
     ->add('name', TextType::class, [
-        'label' => '${SYLIUS_PREFIX}.form.{model_snake}.name',
+        'label' => 'app.form.{model_snake}.name',
     ])
     ->add('enabled', CheckboxType::class, [
-        'label' => '${SYLIUS_PREFIX}.form.{model_snake}.enabled',
+        'label' => 'app.form.{model_snake}.enabled',
     ])
 ;
 ```
@@ -60,10 +60,10 @@ Add to `config/services.yaml`:
 
 ```yaml
 services:
-    ${SYLIUS_PREFIX}.form.type.{model_snake}:
-        class: $SYLIUS_NAMESPACE\Form\Type\{ModelName}\{ModelName}Type
+    app.form.type.{model_snake}:
+        class: App\Form\Type\{ModelName}\{ModelName}Type
         arguments:
-            - '%${SYLIUS_PREFIX}.model.{model_snake}.class%'
+            - '%app.model.{model_snake}.class%'
             - ['sylius']
         tags:
             - { name: form.type }
@@ -71,17 +71,17 @@ services:
 
 ## 3. Declare the form in the resource config
 
-Edit `config/packages/sylius_resource.yaml`. Add `form:` under the existing `classes:` for `${SYLIUS_PREFIX}.{model_snake}`:
+Edit `config/packages/sylius_resource.yaml`. Add `form:` under the existing `classes:` for `app.{model_snake}`:
 
 ```yaml
 sylius_resource:
     resources:
-        ${SYLIUS_PREFIX}.{model_snake}:
+        app.{model_snake}:
             driver: doctrine/orm
             classes:
-                model: $SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}
-                interface: $SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}Interface
-                form: $SYLIUS_NAMESPACE\Form\Type\{ModelName}\{ModelName}Type
+                model: App\Entity\{ModelName}\{ModelName}
+                interface: App\Entity\{ModelName}\{ModelName}Interface
+                form: App\Form\Type\{ModelName}\{ModelName}Type
 ```
 
 ## 4. Translation keys
@@ -89,13 +89,13 @@ sylius_resource:
 Get the project's default locale:
 
 ```bash
-$SYLIUS_CONSOLE debug:container --parameter=kernel.default_locale
+bin/console debug:container --parameter=kernel.default_locale
 ```
 
-Add labels to `translations/messages.{locale}.yaml` under `${SYLIUS_PREFIX}.form.{model_snake}.{field}` (one entry per field declared in the FormType):
+Add labels to `translations/messages.{locale}.yaml` under `app.form.{model_snake}.{field}` (one entry per field declared in the FormType):
 
 ```yaml
-${SYLIUS_PREFIX}:
+app:
     form:
         {model_snake}:
             name: Name
@@ -106,17 +106,17 @@ ${SYLIUS_PREFIX}:
 ## 5. Clear cache
 
 ```bash
-$SYLIUS_CONSOLE cache:clear
+bin/console cache:clear
 ```
 
 ## 6. Verify
 
-- [ ] `$SYLIUS_CONSOLE debug:form "$SYLIUS_NAMESPACE\Form\Type\{ModelName}\{ModelName}Type"` lists the declared fields
-- [ ] `$SYLIUS_CONSOLE debug:translation {locale} --domain=messages 2>&1 | grep '${SYLIUS_PREFIX}.form.{model_snake}'` lists every field label you added. 
+- [ ] `bin/console debug:form "App\Form\Type\{ModelName}\{ModelName}Type"` lists the declared fields
+- [ ] `bin/console debug:translation {locale} --domain=messages 2>&1 | grep 'app.form.{model_snake}'` lists every field label you added. 
 
 ## Next steps
 
-- `/sylius:add-grid` to add the admin index grid
-- Then `/sylius:add-routes` and `/sylius:add-menu` to wire it into the admin
-- `/sylius:add-images` if the model needs an images collection
-- `/sylius:add-autocomplete` to expose the model as a searchable field in another form
+- `/sylius-app:add-grid` to add the admin index grid
+- Then `/sylius-app:add-routes` and `/sylius-app:add-menu` to wire it into the admin
+- `/sylius-app:add-images` if the model needs an images collection
+- `/sylius-app:add-autocomplete` to expose the model as a searchable field in another form

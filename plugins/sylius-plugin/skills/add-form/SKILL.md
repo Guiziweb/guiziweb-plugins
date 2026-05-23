@@ -9,7 +9,7 @@ allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 
 Ask the user for the ModelName if not provided. Read `src/**/Entity/{ModelName}/{ModelName}.php` to detect the entity's fields.
 
-**Prerequisite:** the model must already exist as a Sylius Resource (run `add-model` first).
+**Prerequisite:** the model must already exist as a Sylius Resource (run `/sylius-plugin:add-model` first).
 
 ## 1. Create the FormType
 
@@ -89,7 +89,7 @@ sylius_resource:
 Get the project's default locale:
 
 ```bash
-$SYLIUS_CONSOLE debug:container --parameter=kernel.default_locale
+vendor/bin/console debug:container --parameter=kernel.default_locale
 ```
 
 Add labels to `translations/messages.{locale}.yaml` under `${SYLIUS_PREFIX}.form.{model_snake}.{field}` (one entry per field declared in the FormType):
@@ -106,17 +106,17 @@ ${SYLIUS_PREFIX}:
 ## 5. Clear cache
 
 ```bash
-$SYLIUS_CONSOLE cache:clear
+vendor/bin/console cache:clear
 ```
 
 ## 6. Verify
 
-- [ ] `$SYLIUS_CONSOLE debug:form "$SYLIUS_NAMESPACE\Form\Type\{ModelName}\{ModelName}Type"` lists the declared fields
-- [ ] `$SYLIUS_CONSOLE debug:translation {locale} --domain=messages 2>&1 | grep '${SYLIUS_PREFIX}.form.{model_snake}'` lists every field label you added. 
+- [ ] `vendor/bin/console debug:form "$SYLIUS_NAMESPACE\Form\Type\{ModelName}\{ModelName}Type"` lists the declared fields
+- [ ] `vendor/bin/console debug:translation {locale} --domain=messages 2>&1 | grep '${SYLIUS_PREFIX}.form.{model_snake}'` lists every field label you added. 
 
 ## Next steps
 
-- `/sylius:add-grid` to add the admin index grid
-- Then `/sylius:add-routes` and `/sylius:add-menu` to wire it into the admin
-- `/sylius:add-images` if the model needs an images collection
-- `/sylius:add-autocomplete` to expose the model as a searchable field in another form
+- `/sylius-plugin:add-grid` to add the admin index grid
+- Then `/sylius-plugin:add-routes` and `/sylius-plugin:add-menu` to wire it into the admin
+- `/sylius-plugin:add-images` if the model needs an images collection
+- `/sylius-plugin:add-autocomplete` to expose the model as a searchable field in another form
