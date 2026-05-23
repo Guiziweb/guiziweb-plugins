@@ -9,7 +9,7 @@ allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 
 Ask the user for the ModelName if not provided.
 
-**Prerequisite:** `add-model` must have been run first.
+**Prerequisite:** `/sylius-plugin:add-model` must have been run first.
 
 ## 1. Create the Image entity
 
@@ -156,7 +156,7 @@ services:
 The `ResourceFormComponent` is required for `LiveCollectionType` add/remove buttons to work — it wraps the form in a Live Component context. Register it only if it doesn't already exist:
 
 ```bash
-$SYLIUS_CONSOLE debug:container --tag=sylius.live_component.admin | grep '${SYLIUS_PREFIX}:{model_snake}:form'
+vendor/bin/console debug:container --tag=sylius.live_component.admin | grep '${SYLIUS_PREFIX}:{model_snake}:form'
 ```
 
 If the command returns nothing, append to `config/services.yaml`:
@@ -178,9 +178,7 @@ services:
 
 ## 5. Register the image entity as a Sylius Resource
 
-Append to `sylius_resource.yaml`:
-- **App context**: `config/packages/sylius_resource.yaml`
-- **Plugin context**: `tests/TestApplication/config/packages/sylius_resource.yaml`
+Append to `tests/TestApplication/config/packages/sylius_resource.yaml`:
 
 ```yaml
 sylius_resource:
@@ -268,14 +266,12 @@ Hook files are split by action (`create.yaml`, `update.yaml`), one directory per
 
 Unified path: `config/packages/twig_hooks/{model_snake}/create.yaml` and `update.yaml`.
 
-First-time setup: add (or extend) an `imports:` block at the top of `config/packages/_sylius.yaml` so the split files are loaded:
+First-time setup: add (or extend) an `imports:` block at the top of `tests/TestApplication/config/packages/_sylius.yaml` (create if missing) so the split files are loaded:
 
 ```yaml
 imports:
     - { resource: "twig_hooks/**/*.yaml" }
 ```
-
-Plugin context: same in `tests/TestApplication/config/packages/_sylius.yaml` (create if missing).
 
 ### create.yaml
 
@@ -337,28 +333,28 @@ private Collection $images;
 
 ## 9. Generate and apply the migration
 
-```bash
-$SYLIUS_CONSOLE doctrine:migrations:diff
-```
+The plugin's DI extension declares the `DoctrineMigrations` namespace via `PrependDoctrineMigrationsTrait`, so generate into it:
 
-Plugin-only: append `--namespace=DoctrineMigrations` if the diff does not land in the plugin's migrations directory.
+```bash
+vendor/bin/console doctrine:migrations:diff --namespace=DoctrineMigrations
+```
 
 **Always review the generated migration before applying.** `doctrine:migrations:diff` captures every difference between mapping and DB — including pre-existing schema drift unrelated to your image collection. The migration should only contain `CREATE TABLE ${SYLIUS_PREFIX}_{model_snake}_image` with its `owner_id` FK + indexes. If unrelated SQL is present (e.g. on `messenger_messages` or other Sylius core tables), trim the migration to keep only the image table — drift belongs to the project baseline, not your skill output.
 
 Apply:
 
 ```bash
-$SYLIUS_CONSOLE doctrine:migrations:migrate --no-interaction
+vendor/bin/console doctrine:migrations:migrate --no-interaction
 ```
 
 ## 10. Clear cache
 
 ```bash
-$SYLIUS_CONSOLE cache:clear
+vendor/bin/console cache:clear
 ```
 
 ## 11. Verify
 
-- [ ] `$SYLIUS_CONSOLE sylius:debug:resource '$SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}Image'` prints the image resource metadata (alias `${SYLIUS_PREFIX}.{model_snake}_image`, model class, form type)
-- [ ] `$SYLIUS_CONSOLE doctrine:query:sql "DESCRIBE ${SYLIUS_PREFIX}_{model_snake}_image"` lists the expected columns (`id`, `owner_id`, `type`, `path`)
-- [ ] `$SYLIUS_CONSOLE debug:container --tag=sylius.live_component.admin | grep '${SYLIUS_PREFIX}:{model_snake}:form'` finds the live component key
+- [ ] `vendor/bin/console sylius:debug:resource '$SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}Image'` prints the image resource metadata (alias `${SYLIUS_PREFIX}.{model_snake}_image`, model class, form type)
+- [ ] `vendor/bin/console doctrine:query:sql "DESCRIBE ${SYLIUS_PREFIX}_{model_snake}_image"` lists the expected columns (`id`, `owner_id`, `type`, `path`)
+- [ ] `vendor/bin/console debug:container --tag=sylius.live_component.admin | grep '${SYLIUS_PREFIX}:{model_snake}:form'` finds the live component key

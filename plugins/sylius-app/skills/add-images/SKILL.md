@@ -9,7 +9,7 @@ allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 
 Ask the user for the ModelName if not provided.
 
-**Prerequisite:** `add-model` must have been run first.
+**Prerequisite:** `/sylius-app:add-model` must have been run first.
 
 ## 1. Create the Image entity
 
@@ -20,13 +20,13 @@ Ask the user for the ModelName if not provided.
 
 declare(strict_types=1);
 
-namespace $SYLIUS_NAMESPACE\Entity\{ModelName};
+namespace App\Entity\{ModelName};
 
 use Doctrine\ORM\Mapping as ORM;
 use Sylius\Component\Core\Model\Image;
 
 #[ORM\Entity]
-#[ORM\Table(name: '${SYLIUS_PREFIX}_{model_snake}_image')]
+#[ORM\Table(name: 'app_{model_snake}_image')]
 class {ModelName}Image extends Image
 {
     #[ORM\ManyToOne(
@@ -116,9 +116,9 @@ class {ModelName} implements {ModelName}Interface, ImagesAwareInterface
 
 declare(strict_types=1);
 
-namespace $SYLIUS_NAMESPACE\Form\Type\{ModelName};
+namespace App\Form\Type\{ModelName};
 
-use $SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}Image;
+use App\Entity\{ModelName}\{ModelName}Image;
 use Sylius\Bundle\CoreBundle\Form\Type\ImageType;
 
 final class {ModelName}ImageType extends ImageType
@@ -130,7 +130,7 @@ final class {ModelName}ImageType extends ImageType
 
     public function getBlockPrefix(): string
     {
-        return '${SYLIUS_PREFIX}_{model_snake}_image';
+        return 'app_{model_snake}_image';
     }
 }
 ```
@@ -139,56 +139,54 @@ final class {ModelName}ImageType extends ImageType
 
 ```yaml
 services:
-    ${SYLIUS_PREFIX}.form.type.{model_snake}_image:
-        class: $SYLIUS_NAMESPACE\Form\Type\{ModelName}\{ModelName}ImageType
+    app.form.type.{model_snake}_image:
+        class: App\Form\Type\{ModelName}\{ModelName}ImageType
         tags:
             - { name: form.type }
 
-    ${SYLIUS_PREFIX}.listener.images_upload.{model_snake}:
+    app.listener.images_upload.{model_snake}:
         parent: sylius.listener.images_upload
         autowire: true
         public: false
         tags:
-            - { name: kernel.event_listener, event: '${SYLIUS_PREFIX}.{model_snake}.pre_create', method: uploadImages }
-            - { name: kernel.event_listener, event: '${SYLIUS_PREFIX}.{model_snake}.pre_update', method: uploadImages }
+            - { name: kernel.event_listener, event: 'app.{model_snake}.pre_create', method: uploadImages }
+            - { name: kernel.event_listener, event: 'app.{model_snake}.pre_update', method: uploadImages }
 ```
 
 The `ResourceFormComponent` is required for `LiveCollectionType` add/remove buttons to work — it wraps the form in a Live Component context. Register it only if it doesn't already exist:
 
 ```bash
-$SYLIUS_CONSOLE debug:container --tag=sylius.live_component.admin | grep '${SYLIUS_PREFIX}:{model_snake}:form'
+bin/console debug:container --tag=sylius.live_component.admin | grep 'app:{model_snake}:form'
 ```
 
 If the command returns nothing, append to `config/services.yaml`:
 
 ```yaml
 services:
-    ${SYLIUS_PREFIX}.twig.component.{model_snake}.form:
+    app.twig.component.{model_snake}.form:
         class: Sylius\Bundle\UiBundle\Twig\Component\ResourceFormComponent
         arguments:
-            - '@${SYLIUS_PREFIX}.repository.{model_snake}'
+            - '@app.repository.{model_snake}'
             - '@form.factory'
-            - '%${SYLIUS_PREFIX}.model.{model_snake}.class%'
-            - $SYLIUS_NAMESPACE\Form\Type\{ModelName}\{ModelName}Type
+            - '%app.model.{model_snake}.class%'
+            - App\Form\Type\{ModelName}\{ModelName}Type
         tags:
-            - { name: sylius.live_component.admin, key: '${SYLIUS_PREFIX}:{model_snake}:form' }
+            - { name: sylius.live_component.admin, key: 'app:{model_snake}:form' }
 ```
 
-> The event names use `${SYLIUS_PREFIX}` (Sylius 2.x resource events use the application prefix, not `sylius.*`).
+> The event names use `app` (Sylius 2.x resource events use the application prefix, not `sylius.*`).
 
 ## 5. Register the image entity as a Sylius Resource
 
-Append to `sylius_resource.yaml`:
-- **App context**: `config/packages/sylius_resource.yaml`
-- **Plugin context**: `tests/TestApplication/config/packages/sylius_resource.yaml`
+Append to `config/packages/sylius_resource.yaml`:
 
 ```yaml
 sylius_resource:
     resources:
-        ${SYLIUS_PREFIX}.{model_snake}_image:
+        app.{model_snake}_image:
             classes:
-                model: $SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}Image
-                form: $SYLIUS_NAMESPACE\Form\Type\{ModelName}\{ModelName}ImageType
+                model: App\Entity\{ModelName}\{ModelName}Image
+                form: App\Form\Type\{ModelName}\{ModelName}ImageType
 ```
 
 ## 6. Add `images` field to the main FormType
@@ -275,8 +273,6 @@ imports:
     - { resource: "twig_hooks/**/*.yaml" }
 ```
 
-Plugin context: same in `tests/TestApplication/config/packages/_sylius.yaml` (create if missing).
-
 ### create.yaml
 
 > If `create.yaml` already exists for this resource (e.g. from `add-translatable-model`), the `form:` block is already set — only add the `images:` entry under `content.form.sections` and the `images.*` sub-hook.
@@ -286,7 +282,7 @@ sylius_twig_hooks:
     hooks:
         'sylius_admin.{model_snake}.create.content':
             form:
-                component: '${SYLIUS_PREFIX}:{model_snake}:form'
+                component: 'app:{model_snake}:form'
                 props:
                     resource: '@=_context.resource'
                     form: '@=_context.form'
@@ -295,15 +291,15 @@ sylius_twig_hooks:
 
         'sylius_admin.{model_snake}.create.content.form.sections':
             images:
-                template: '${SYLIUS_TEMPLATE_NS}admin/{model_snake}/form/sections/images.html.twig'
+                template: 'admin/{model_snake}/form/sections/images.html.twig'
                 priority: -100
 
         'sylius_admin.{model_snake}.create.content.form.sections.images':
             content:
-                template: '${SYLIUS_TEMPLATE_NS}admin/{model_snake}/form/sections/images/content.html.twig'
+                template: 'admin/{model_snake}/form/sections/images/content.html.twig'
                 priority: 100
             add_button:
-                template: '${SYLIUS_TEMPLATE_NS}admin/{model_snake}/form/sections/images/add_button.html.twig'
+                template: 'admin/{model_snake}/form/sections/images/add_button.html.twig'
                 priority: 0
 ```
 
@@ -338,27 +334,25 @@ private Collection $images;
 ## 9. Generate and apply the migration
 
 ```bash
-$SYLIUS_CONSOLE doctrine:migrations:diff
+bin/console doctrine:migrations:diff
 ```
 
-Plugin-only: append `--namespace=DoctrineMigrations` if the diff does not land in the plugin's migrations directory.
-
-**Always review the generated migration before applying.** `doctrine:migrations:diff` captures every difference between mapping and DB — including pre-existing schema drift unrelated to your image collection. The migration should only contain `CREATE TABLE ${SYLIUS_PREFIX}_{model_snake}_image` with its `owner_id` FK + indexes. If unrelated SQL is present (e.g. on `messenger_messages` or other Sylius core tables), trim the migration to keep only the image table — drift belongs to the project baseline, not your skill output.
+**Always review the generated migration before applying.** `doctrine:migrations:diff` captures every difference between mapping and DB — including pre-existing schema drift unrelated to your image collection. The migration should only contain `CREATE TABLE app_{model_snake}_image` with its `owner_id` FK + indexes. If unrelated SQL is present (e.g. on `messenger_messages` or other Sylius core tables), trim the migration to keep only the image table — drift belongs to the project baseline, not your skill output.
 
 Apply:
 
 ```bash
-$SYLIUS_CONSOLE doctrine:migrations:migrate --no-interaction
+bin/console doctrine:migrations:migrate --no-interaction
 ```
 
 ## 10. Clear cache
 
 ```bash
-$SYLIUS_CONSOLE cache:clear
+bin/console cache:clear
 ```
 
 ## 11. Verify
 
-- [ ] `$SYLIUS_CONSOLE sylius:debug:resource '$SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}Image'` prints the image resource metadata (alias `${SYLIUS_PREFIX}.{model_snake}_image`, model class, form type)
-- [ ] `$SYLIUS_CONSOLE doctrine:query:sql "DESCRIBE ${SYLIUS_PREFIX}_{model_snake}_image"` lists the expected columns (`id`, `owner_id`, `type`, `path`)
-- [ ] `$SYLIUS_CONSOLE debug:container --tag=sylius.live_component.admin | grep '${SYLIUS_PREFIX}:{model_snake}:form'` finds the live component key
+- [ ] `bin/console sylius:debug:resource 'App\Entity\{ModelName}\{ModelName}Image'` prints the image resource metadata (alias `app.{model_snake}_image`, model class, form type)
+- [ ] `bin/console doctrine:query:sql "DESCRIBE app_{model_snake}_image"` lists the expected columns (`id`, `owner_id`, `type`, `path`)
+- [ ] `bin/console debug:container --tag=sylius.live_component.admin | grep 'app:{model_snake}:form'` finds the live component key
