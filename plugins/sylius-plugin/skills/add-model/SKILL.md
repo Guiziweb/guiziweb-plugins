@@ -78,7 +78,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 private ?string $title = null;
 ```
 
-For relations to another resource in the same project, always use the target's **interface** as `targetEntity` — Sylius's `ResolveTargetEntityListener` resolves it at runtime from the `interface:` key in the resource config. In forms, `EntityType` does not go through this listener — pass the concrete class or use `/sylius:add-autocomplete`.
+For relations to another resource in the same project, always use the target's **interface** as `targetEntity` — Sylius's `ResolveTargetEntityListener` resolves it at runtime from the `interface:` key in the resource config. In forms, `EntityType` does not go through this listener — pass the concrete class or use `/sylius-plugin:add-autocomplete`.
 
 **ManyToOne** — `{ModelName}` belongs to one `{RelatedModel}`:
 
@@ -135,13 +135,11 @@ public function __construct()
 }
 ```
 
-To reach a Sylius core entity from a plugin (e.g. attach plugin data to `Product`), do not add a relation on the plugin entity — use `/sylius:extends-model` + a plugin-provided trait instead (the FK lives on the extended core entity).
+To reach a Sylius core entity from a plugin (e.g. attach plugin data to `Product`), do not add a relation on the plugin entity — use `/sylius-plugin:extends-model` + a plugin-provided trait instead (the FK lives on the extended core entity).
 
 ## 3. Register as Sylius Resource
 
-Append to the project's `sylius_resource.yaml` under `sylius_resource.resources`:
-- **App context**: `config/packages/sylius_resource.yaml` (shipped by Sylius-Standard with a `#app.book:` commented hint)
-- **Plugin context**: `config/packages/sylius_resource.yaml` at the **plugin root** (create if missing). The `PluginSkeleton` test-app loads only `tests/TestApplication/config/config.yaml` (via `SYLIUS_TEST_APP_CONFIGS_TO_IMPORT`), which itself imports `@{PluginBundle}/config/config.yaml` — so the plugin's own config has to pull in the packages dir. Add once to the plugin's `config/config.yaml`: `- { resource: "packages/*.yaml" }`.
+Append to `config/packages/sylius_resource.yaml` at the **plugin root** (create if missing). The `PluginSkeleton` test-app loads only `tests/TestApplication/config/config.yaml` (via `SYLIUS_TEST_APP_CONFIGS_TO_IMPORT`), which itself imports `@{PluginBundle}/config/config.yaml` — so the plugin's own config has to pull in the packages dir. Add once to the plugin's `config/config.yaml`: `- { resource: "packages/*.yaml" }`.
 
 ```yaml
 sylius_resource:
@@ -155,45 +153,37 @@ sylius_resource:
 
 ## 4. Generate and apply the migration
 
-**If `$SYLIUS_CONTEXT = plugin`** — the plugin's DI extension declares the `DoctrineMigrations` namespace via `PrependDoctrineMigrationsTrait`, so generate into it:
+The plugin's DI extension declares the `DoctrineMigrations` namespace via `PrependDoctrineMigrationsTrait`, so generate into it:
 
 ```bash
-$SYLIUS_CONSOLE doctrine:migrations:diff --namespace=DoctrineMigrations
-```
-
-**If `$SYLIUS_CONTEXT = app`** — use the app's default migrations namespace:
-
-```bash
-$SYLIUS_CONSOLE doctrine:migrations:diff
+vendor/bin/console doctrine:migrations:diff --namespace=DoctrineMigrations
 ```
 
 **Always review the generated migration before applying.** `doctrine:migrations:diff` captures **every** difference between mapping and DB — including pre-existing schema drift unrelated to your model (e.g. `ALTER TABLE messenger_messages ...` from a Sylius update never migrated locally). The migration should only contain `CREATE TABLE ${SYLIUS_PREFIX}_{model_snake}` + its indexes/FKs.
 
-If unrelated SQL is present:
-- **Plugin context** — manually trim the migration `up()`/`down()` to keep only your table. The drift belongs to the test app baseline, not your plugin.
-- **App context** — investigate the drift before merging. Either generate a separate baseline migration to absorb it, or trim and document why.
+If unrelated SQL is present, manually trim the migration `up()`/`down()` to keep only your table — the drift belongs to the test app baseline, not your plugin.
 
 Then apply:
 
 ```bash
-$SYLIUS_CONSOLE doctrine:migrations:migrate --no-interaction
+vendor/bin/console doctrine:migrations:migrate --no-interaction
 ```
 
 ## 5. Clear cache
 
 ```bash
-$SYLIUS_CONSOLE cache:clear
+vendor/bin/console cache:clear
 ```
 
 ## 6. Verify
 
-- [ ] `$SYLIUS_CONSOLE sylius:debug:resource '$SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}'` prints the resource metadata (alias `${SYLIUS_PREFIX}.{model_snake}`, model + interface classes)
-- [ ] `$SYLIUS_CONSOLE doctrine:query:sql "DESCRIBE ${SYLIUS_PREFIX}_{model_snake}"` lists the expected columns (`id`, plus user fields)
+- [ ] `vendor/bin/console sylius:debug:resource '$SYLIUS_NAMESPACE\Entity\{ModelName}\{ModelName}'` prints the resource metadata (alias `${SYLIUS_PREFIX}.{model_snake}`, model + interface classes)
+- [ ] `vendor/bin/console doctrine:query:sql "DESCRIBE ${SYLIUS_PREFIX}_{model_snake}"` lists the expected columns (`id`, plus user fields)
 
 ---
 
 ## Next steps
 
-1. `/sylius:add-form` to add an admin form
-2. `/sylius:add-translatable-model` if the model needs translations
-3. `/sylius:add-grid`, then `/sylius:add-routes`, then `/sylius:add-menu`
+1. `/sylius-plugin:add-form` to add an admin form
+2. `/sylius-plugin:add-translatable-model` if the model needs translations
+3. `/sylius-plugin:add-grid`, then `/sylius-plugin:add-routes`, then `/sylius-plugin:add-menu`
