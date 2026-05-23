@@ -12,7 +12,7 @@ Ask the user for the ModelName if not provided. Ask also:
 - **Submenu icon** — Tabler icon name. Optional.
 - **Item icon** — Tabler icon name.
 
-**Prerequisite:** admin routes exist (`/sylius:add-routes`).
+**Prerequisite:** admin routes exist (`/sylius-plugin:add-routes`).
 
 Sylius admin menu customization is done via an event listener on `sylius.menu.admin.main` (the left sidebar) — this is the idiomatic approach per the Sylius customizing-menus guide.
 
@@ -75,7 +75,7 @@ The listener is invokable (`__invoke`), so no `method:` attribute is needed on t
 Get the project's default locale:
 
 ```bash
-$SYLIUS_CONSOLE debug:container --parameter=kernel.default_locale
+vendor/bin/console debug:container --parameter=kernel.default_locale
 ```
 
 Add to `translations/messages.{locale}.yaml`:
@@ -86,7 +86,7 @@ ${SYLIUS_PREFIX}:
         {submenu_key}: '{Submenu label}'
         {model_snake}: '{ModelName}'                        # singular — Sylius auto-uses it for create/show titles
         {model_snake_plural}: '{ModelName}s'                 # plural — Sylius auto-uses it for breadcrumbs
-        manage_{model_snake_plural}: 'Manage {ModelName}s'   # subheader (also used by /sylius:add-routes)
+        manage_{model_snake_plural}: 'Manage {ModelName}s'   # subheader (also used by /sylius-plugin:add-routes)
 ```
 
 The singular `${SYLIUS_PREFIX}.ui.{model_snake}` is auto-resolved by Sylius's admin templates for titles like "New {ModelName}". Must stay a scalar — never nest anything under it.
@@ -94,11 +94,11 @@ The singular `${SYLIUS_PREFIX}.ui.{model_snake}` is auto-resolved by Sylius's ad
 ## 4. Clear cache
 
 ```bash
-$SYLIUS_CONSOLE cache:clear
+vendor/bin/console cache:clear
 ```
 
 ## 5. Verify
 
- - [ ] `$SYLIUS_CONSOLE debug:event-dispatcher sylius.menu.admin.main` lists `$SYLIUS_NAMESPACE\Menu\AdminMenuListener` among the registered listeners
-- [ ] `$SYLIUS_CONSOLE debug:router ${SYLIUS_PREFIX}_admin_{model_snake}_index` resolves the target route
-- [ ] `$SYLIUS_CONSOLE debug:translation {locale} --domain=messages 2>&1 | grep '${SYLIUS_PREFIX}.ui.'` lists every ui key you added.
+ - [ ] `vendor/bin/console debug:event-dispatcher sylius.menu.admin.main` lists `$SYLIUS_NAMESPACE\Menu\AdminMenuListener` among the registered listeners
+- [ ] `vendor/bin/console debug:router ${SYLIUS_PREFIX}_admin_{model_snake}_index` resolves the target route
+- [ ] `vendor/bin/console debug:translation {locale} --domain=messages 2>&1 | grep '${SYLIUS_PREFIX}.ui.'` lists every ui key you added.
