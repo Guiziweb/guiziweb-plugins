@@ -1,9 +1,0 @@
-{
-  "name": "sylius",
-  "description": "Skills for Sylius plugin and application development",
-  "version": "2.0.0",
-  "author": {
-    "name": "Guiziweb",
-    "email": "guiziweb@gmail.com"
-  }
-}
