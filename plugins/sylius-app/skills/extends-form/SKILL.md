@@ -14,18 +14,18 @@ Ask the user if not provided:
 - Whether the field is **required** (default: `false`)
 - The **target section hook** (default: `general`). To list available sections, on Sylius 2.3+:
   ```bash
-  $SYLIUS_CONSOLE sylius:debug:twig-hooks sylius_admin.{target_model_snake}
+  bin/console sylius:debug:twig-hooks sylius_admin.{target_model_snake}
   ```
-  On older versions, fall back to `$SYLIUS_CONSOLE debug:config sylius_twig_hooks`.
+  On older versions, fall back to `bin/console debug:config sylius_twig_hooks`.
 
 **Prerequisites**:
-- The field must exist on the entity. Run `/sylius:extends-model` first for a Sylius core entity, or add the column on your own resource.
-- For an entity-autocomplete field type, run `/sylius:add-autocomplete` first so `{Related}AutocompleteType` exists.
+- The field must exist on the entity. Run `/sylius-app:extends-model` first for a Sylius core entity, or add the column on your own resource.
+- For an entity-autocomplete field type, run `/sylius-app:add-autocomplete` first so `{Related}AutocompleteType` exists.
 
 ## 1. Identify the target FormType
 
 ```bash
-$SYLIUS_CONSOLE sylius:debug:resource sylius.{target_model_snake}
+bin/console sylius:debug:resource sylius.{target_model_snake}
 ```
 
 The `classes.form` row in the output is the FormType FQCN used by the admin. Use it directly as the `use` statement and as the `getExtendedTypes()` return. Without an argument, the command lists every resource alias.
@@ -39,7 +39,7 @@ The `classes.form` row in the output is the FormType FQCN used by the admin. Use
 
 declare(strict_types=1);
 
-namespace $SYLIUS_NAMESPACE\Form\Extension\{TargetModel};
+namespace App\Form\Extension\{TargetModel};
 
 use {TargetFormFqcn};  // value returned by step 1
 use Symfony\Component\Form\AbstractTypeExtension;
@@ -51,7 +51,7 @@ final class {TargetModel}TypeExtension extends AbstractTypeExtension
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('{field_name}', {FieldType}::class, [
-            'label' => '${SYLIUS_PREFIX}.form.{target_model_snake}.{field_name}',
+            'label' => 'app.form.{target_model_snake}.{field_name}',
             'required' => {required},
         ]);
     }
@@ -69,8 +69,8 @@ Add to `config/services.yaml`:
 
 ```yaml
 services:
-    ${SYLIUS_PREFIX}.form.extension.{target_model_snake}_type:
-        class: $SYLIUS_NAMESPACE\Form\Extension\{TargetModel}\{TargetModel}TypeExtension
+    app.form.extension.{target_model_snake}_type:
+        class: App\Form\Extension\{TargetModel}\{TargetModel}TypeExtension
         tags:
             - { name: form.type_extension }
 ```
@@ -96,7 +96,7 @@ sylius_twig_hooks:
     hooks:
         'sylius_admin.{target_model_snake}.create.content.form.sections.{section}':
             {field_name}:
-                template: '${SYLIUS_TEMPLATE_NS}admin/{target_model_snake}/form/sections/{section}/{field_name}.html.twig'
+                template: 'admin/{target_model_snake}/form/sections/{section}/{field_name}.html.twig'
                 priority: -100
 ```
 
@@ -109,13 +109,13 @@ A negative priority places the field at the bottom of the section without renumb
 Get the project's default locale:
 
 ```bash
-$SYLIUS_CONSOLE debug:container --parameter=kernel.default_locale
+bin/console debug:container --parameter=kernel.default_locale
 ```
 
 Add to `translations/messages.{locale}.yaml`:
 
 ```yaml
-${SYLIUS_PREFIX}:
+app:
     form:
         {target_model_snake}:
             {field_name}: '{Field label}'
@@ -124,18 +124,18 @@ ${SYLIUS_PREFIX}:
 ## 7. Clear cache
 
 ```bash
-$SYLIUS_CONSOLE cache:clear
+bin/console cache:clear
 ```
 
 ## 8. Verify
 
-- [ ] `$SYLIUS_CONSOLE debug:form '{TargetFormFqcn}'` (FQCN from step 1) lists `{field_name}` among the type's fields
-- [ ] `$SYLIUS_CONSOLE debug:translation {locale} --domain=messages 2>&1 | grep '${SYLIUS_PREFIX}.form.{target_model_snake}.{field_name}'` finds the label.
+- [ ] `bin/console debug:form '{TargetFormFqcn}'` (FQCN from step 1) lists `{field_name}` among the type's fields
+- [ ] `bin/console debug:translation {locale} --domain=messages 2>&1 | grep 'app.form.{target_model_snake}.{field_name}'` finds the label.
 
 ---
 
  ## Next steps
 
-- Extending a Sylius core entity with a column → `/sylius:extends-model` (typical paired workflow: extend the entity, then expose the field here)
-- Using an autocomplete type as the field → `/sylius:add-autocomplete`
-- Displaying the new field in the admin grid → `/sylius:extends-grid`
+- Extending a Sylius core entity with a column → `/sylius-app:extends-model` (typical paired workflow: extend the entity, then expose the field here)
+- Using an autocomplete type as the field → `/sylius-app:add-autocomplete`
+- Displaying the new field in the admin grid → `/sylius-app:extends-grid`

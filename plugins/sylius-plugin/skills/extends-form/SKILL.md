@@ -14,18 +14,18 @@ Ask the user if not provided:
 - Whether the field is **required** (default: `false`)
 - The **target section hook** (default: `general`). To list available sections, on Sylius 2.3+:
   ```bash
-  $SYLIUS_CONSOLE sylius:debug:twig-hooks sylius_admin.{target_model_snake}
+  vendor/bin/console sylius:debug:twig-hooks sylius_admin.{target_model_snake}
   ```
-  On older versions, fall back to `$SYLIUS_CONSOLE debug:config sylius_twig_hooks`.
+  On older versions, fall back to `vendor/bin/console debug:config sylius_twig_hooks`.
 
 **Prerequisites**:
-- The field must exist on the entity. Run `/sylius:extends-model` first for a Sylius core entity, or add the column on your own resource.
-- For an entity-autocomplete field type, run `/sylius:add-autocomplete` first so `{Related}AutocompleteType` exists.
+- The field must exist on the entity. Run `/sylius-plugin:extends-model` first for a Sylius core entity, or add the column on your own resource.
+- For an entity-autocomplete field type, run `/sylius-plugin:add-autocomplete` first so `{Related}AutocompleteType` exists.
 
 ## 1. Identify the target FormType
 
 ```bash
-$SYLIUS_CONSOLE sylius:debug:resource sylius.{target_model_snake}
+vendor/bin/console sylius:debug:resource sylius.{target_model_snake}
 ```
 
 The `classes.form` row in the output is the FormType FQCN used by the admin. Use it directly as the `use` statement and as the `getExtendedTypes()` return. Without an argument, the command lists every resource alias.
@@ -85,11 +85,11 @@ services:
 
 ## 5. Register the Twig hooks (split by action)
 
-One file per action under `config/packages/twig_hooks/{target_model_snake}/`. Loaded via the `imports:` block at the top of `config/packages/_sylius.yaml` (add `- { resource: "twig_hooks/**/*.yaml" }` if not already there).
+One file per action under `tests/TestApplication/config/packages/twig_hooks/{target_model_snake}/`. Loaded via the `imports:` block at the top of `tests/TestApplication/config/packages/_sylius.yaml` (add `- { resource: "twig_hooks/**/*.yaml" }` if not already there).
 
 If files already exist for this target (from a previous `extends-form` run), add the new entry under the existing hook key — do not overwrite.
 
-`config/packages/twig_hooks/{target_model_snake}/create.yaml`:
+`tests/TestApplication/config/packages/twig_hooks/{target_model_snake}/create.yaml`:
 
 ```yaml
 sylius_twig_hooks:
@@ -100,7 +100,7 @@ sylius_twig_hooks:
                 priority: -100
 ```
 
-`config/packages/twig_hooks/{target_model_snake}/update.yaml` — same content, replace `.create.` with `.update.`.
+`tests/TestApplication/config/packages/twig_hooks/{target_model_snake}/update.yaml` — same content, replace `.create.` with `.update.`.
 
 A negative priority places the field at the bottom of the section without renumbering existing entries.
 
@@ -109,7 +109,7 @@ A negative priority places the field at the bottom of the section without renumb
 Get the project's default locale:
 
 ```bash
-$SYLIUS_CONSOLE debug:container --parameter=kernel.default_locale
+vendor/bin/console debug:container --parameter=kernel.default_locale
 ```
 
 Add to `translations/messages.{locale}.yaml`:
@@ -124,18 +124,18 @@ ${SYLIUS_PREFIX}:
 ## 7. Clear cache
 
 ```bash
-$SYLIUS_CONSOLE cache:clear
+vendor/bin/console cache:clear
 ```
 
 ## 8. Verify
 
-- [ ] `$SYLIUS_CONSOLE debug:form '{TargetFormFqcn}'` (FQCN from step 1) lists `{field_name}` among the type's fields
-- [ ] `$SYLIUS_CONSOLE debug:translation {locale} --domain=messages 2>&1 | grep '${SYLIUS_PREFIX}.form.{target_model_snake}.{field_name}'` finds the label.
+- [ ] `vendor/bin/console debug:form '{TargetFormFqcn}'` (FQCN from step 1) lists `{field_name}` among the type's fields
+- [ ] `vendor/bin/console debug:translation {locale} --domain=messages 2>&1 | grep '${SYLIUS_PREFIX}.form.{target_model_snake}.{field_name}'` finds the label.
 
 ---
 
  ## Next steps
 
-- Extending a Sylius core entity with a column → `/sylius:extends-model` (typical paired workflow: extend the entity, then expose the field here)
-- Using an autocomplete type as the field → `/sylius:add-autocomplete`
-- Displaying the new field in the admin grid → `/sylius:extends-grid`
+- Extending a Sylius core entity with a column → `/sylius-plugin:extends-model` (typical paired workflow: extend the entity, then expose the field here)
+- Using an autocomplete type as the field → `/sylius-plugin:add-autocomplete`
+- Displaying the new field in the admin grid → `/sylius-plugin:extends-grid`
