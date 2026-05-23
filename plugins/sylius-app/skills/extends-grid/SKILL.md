@@ -9,14 +9,14 @@ allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 
 Customize a Sylius core grid (e.g. `sylius_admin_product`, `sylius_admin_customer`, `sylius_admin_product_review`) without replacing it. Sylius merges the override on top of the inherited definition — only declare the keys you change.
 
-**Not for new grids** — use `/sylius:add-grid` instead.
+**Not for new grids** — use `/sylius-app:add-grid` instead.
 
 ## 1. Identify the target grid
 
 Ask the user for the grid alias if not provided. Inspect the current definition:
 
 ```bash
-$SYLIUS_CONSOLE sylius:debug:grid {alias}
+bin/console sylius:debug:grid {alias}
 ```
 
 Run without an argument to get an interactive list of all registered grids — useful when the exact alias is unknown.
@@ -27,7 +27,7 @@ Read the output before writing: override keys must exactly match existing field/
 
 File location matches the rest of the project: `config/packages/grids/{alias}.yaml` (e.g. `sylius_admin_product.yaml`). Naming the file after the alias keeps overrides self-documenting.
 
-Assumes `config/packages/_sylius.yaml` already imports `grids/*.yaml` at its top. If not, run `/sylius:add-grid` once to scaffold it.
+Assumes `config/packages/_sylius.yaml` already imports `grids/*.yaml` at its top. If not, run `/sylius-app:add-grid` once to scaffold it.
 
 Only include the keys being modified — everything else stays inherited.
 
@@ -74,7 +74,7 @@ sylius_grid:
         sylius_admin_product_review:
             fields:
                 date:
-                    label: ${SYLIUS_PREFIX}.ui.product_review.date
+                    label: app.ui.product_review.date
 ```
 
 ### Override an action's route or options
@@ -97,7 +97,7 @@ sylius_grid:
 
 ### Add a new field (or filter, or action)
 
-Declare it as in `add-grid` — Sylius merges the new entry into the inherited grid. Typical case: a plugin has run `/sylius:extends-model` to add a column to a core entity, and wants to expose it on the core grid.
+Declare it as in `add-grid` — Sylius merges the new entry into the inherited grid. Typical case: you ran `/sylius-app:extends-model` to add a column to a core entity, and want to expose it on the core grid.
 
 ```yaml
 sylius_grid:
@@ -106,7 +106,7 @@ sylius_grid:
             fields:
                 myFlag:
                     type: twig
-                    label: ${SYLIUS_PREFIX}.ui.product.my_flag
+                    label: app.ui.product.my_flag
                     path: myFlag
                     options:
                         template: '@SyliusUi/Grid/Field/enabled.html.twig'
@@ -132,7 +132,7 @@ Sylius dispatches `sylius.grid.{stripped_alias}` during grid conversion, where `
 
 declare(strict_types=1);
 
-namespace $SYLIUS_NAMESPACE\Grid;
+namespace App\Grid;
 
 use Sylius\Component\Grid\Definition\Field;
 use Sylius\Component\Grid\Event\GridDefinitionConverterEvent;
@@ -146,7 +146,7 @@ final class AdminProductGridListener
         $grid->removeField('image');
 
         $field = Field::fromNameAndType('variantSelectionMethod', 'string');
-        $field->setLabel('${SYLIUS_PREFIX}.ui.product.variant_selection');
+        $field->setLabel('app.ui.product.variant_selection');
         $grid->addField($field);
     }
 }
@@ -156,8 +156,8 @@ Register it in `config/services.yaml`:
 
 ```yaml
 services:
-    ${SYLIUS_PREFIX}.listener.grid.{stripped_alias}:
-        class: $SYLIUS_NAMESPACE\Grid\{ListenerClassName}
+    app.listener.grid.{stripped_alias}:
+        class: App\Grid\{ListenerClassName}
         tags:
             - { name: kernel.event_listener, event: sylius.grid.{stripped_alias} }
 ```
@@ -169,14 +169,14 @@ services:
 ## 4. Clear cache
 
 ```bash
-$SYLIUS_CONSOLE cache:clear
+bin/console cache:clear
 ```
 
 ## 5. Verify
 
-- [ ] `$SYLIUS_CONSOLE sylius:debug:grid {alias}` reflects all overrides (new fields present, hidden ones marked disabled, reordered positions applied)
+- [ ] `bin/console sylius:debug:grid {alias}` reflects all overrides (new fields present, hidden ones marked disabled, reordered positions applied)
 
 ## Next steps
 
-- Paired with `/sylius:extends-model` when adding a field to a core entity and exposing it here
-- For a brand-new grid on a plugin resource, use `/sylius:add-grid`
+- Paired with `/sylius-app:extends-model` when adding a field to a core entity and exposing it here
+- For a brand-new grid on a plugin resource, use `/sylius-app:add-grid`

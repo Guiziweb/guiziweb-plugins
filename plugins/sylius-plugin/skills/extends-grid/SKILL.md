@@ -9,14 +9,14 @@ allowed-tools: AskUserQuestion, Bash, Read, Edit, Write, Glob, Grep
 
 Customize a Sylius core grid (e.g. `sylius_admin_product`, `sylius_admin_customer`, `sylius_admin_product_review`) without replacing it. Sylius merges the override on top of the inherited definition — only declare the keys you change.
 
-**Not for new grids** — use `/sylius:add-grid` instead.
+**Not for new grids** — use `/sylius-plugin:add-grid` instead.
 
 ## 1. Identify the target grid
 
 Ask the user for the grid alias if not provided. Inspect the current definition:
 
 ```bash
-$SYLIUS_CONSOLE sylius:debug:grid {alias}
+vendor/bin/console sylius:debug:grid {alias}
 ```
 
 Run without an argument to get an interactive list of all registered grids — useful when the exact alias is unknown.
@@ -25,9 +25,9 @@ Read the output before writing: override keys must exactly match existing field/
 
 ## 2. Write the override
 
-File location matches the rest of the project: `config/packages/grids/{alias}.yaml` (e.g. `sylius_admin_product.yaml`). Naming the file after the alias keeps overrides self-documenting.
+File location matches the rest of the test app: `tests/TestApplication/config/packages/grids/{alias}.yaml` (e.g. `sylius_admin_product.yaml`). Naming the file after the alias keeps overrides self-documenting.
 
-Assumes `config/packages/_sylius.yaml` already imports `grids/*.yaml` at its top. If not, run `/sylius:add-grid` once to scaffold it.
+Assumes `tests/TestApplication/config/packages/_sylius.yaml` already imports `grids/*.yaml` at its top. If not, run `/sylius-plugin:add-grid` once to scaffold it.
 
 Only include the keys being modified — everything else stays inherited.
 
@@ -97,7 +97,7 @@ sylius_grid:
 
 ### Add a new field (or filter, or action)
 
-Declare it as in `add-grid` — Sylius merges the new entry into the inherited grid. Typical case: a plugin has run `/sylius:extends-model` to add a column to a core entity, and wants to expose it on the core grid.
+Declare it as in `add-grid` — Sylius merges the new entry into the inherited grid. Typical case: a plugin has run `/sylius-plugin:extends-model` to add a column to a core entity, and wants to expose it on the core grid.
 
 ```yaml
 sylius_grid:
@@ -169,14 +169,14 @@ services:
 ## 4. Clear cache
 
 ```bash
-$SYLIUS_CONSOLE cache:clear
+vendor/bin/console cache:clear
 ```
 
 ## 5. Verify
 
-- [ ] `$SYLIUS_CONSOLE sylius:debug:grid {alias}` reflects all overrides (new fields present, hidden ones marked disabled, reordered positions applied)
+- [ ] `vendor/bin/console sylius:debug:grid {alias}` reflects all overrides (new fields present, hidden ones marked disabled, reordered positions applied)
 
 ## Next steps
 
-- Paired with `/sylius:extends-model` when adding a field to a core entity and exposing it here
-- For a brand-new grid on a plugin resource, use `/sylius:add-grid`
+- Paired with `/sylius-plugin:extends-model` when adding a field to a core entity and exposing it here
+- For a brand-new grid on a plugin resource, use `/sylius-plugin:add-grid`
