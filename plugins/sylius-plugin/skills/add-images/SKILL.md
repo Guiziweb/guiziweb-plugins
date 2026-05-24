@@ -178,7 +178,7 @@ services:
 
 ## 5. Register the image entity as a Sylius Resource
 
-Append to `tests/TestApplication/config/packages/sylius_resource.yaml`:
+Create `config/resources/{model_snake}_image.yaml` at the **plugin root** (the image is a separate resource from its owner — one file per resource convention):
 
 ```yaml
 sylius_resource:
@@ -262,16 +262,11 @@ $builder->add('images', LiveCollectionType::class, [
 
 ### Twig hooks
 
-Hook files are split by action (`create.yaml`, `update.yaml`), one directory per resource — matching Sylius core convention.
+Hook files are split by action (`create.yaml`, `update.yaml`), one directory per resource — matching Sylius core plugin convention (`config/twig_hooks/admin/{model_snake}/`).
 
-Unified path: `config/packages/twig_hooks/{model_snake}/create.yaml` and `update.yaml`.
+Unified path at the **plugin root**: `config/twig_hooks/admin/{model_snake}/create.yaml` and `update.yaml`.
 
-First-time setup: add (or extend) an `imports:` block at the top of `tests/TestApplication/config/packages/_sylius.yaml` (create if missing) so the split files are loaded:
-
-```yaml
-imports:
-    - { resource: "twig_hooks/**/*.yaml" }
-```
+First-time setup: add the import once to the plugin's `config/config.yaml`: `- { resource: "twig_hooks/**/*.yaml" }`.
 
 ### create.yaml
 
