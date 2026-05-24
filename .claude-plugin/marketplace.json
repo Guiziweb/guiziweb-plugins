@@ -6,7 +6,6 @@
   },
   "metadata": {
     "description": "Sylius plugin development tools for Claude Code",
-    "version": "1.7.0",
     "pluginRoot": "./plugins"
   },
   "plugins": [
@@ -14,7 +13,6 @@
       "name": "sylius-plugin",
       "source": "./plugins/sylius-plugin",
       "description": "Skills for developing a Sylius plugin (PluginSkeleton, test application, distributable package)",
-      "version": "2.0.0",
       "author": {
         "name": "Guiziweb",
         "email": "guiziweb@gmail.com"
@@ -32,7 +30,6 @@
       "name": "sylius-app",
       "source": "./plugins/sylius-app",
       "description": "Skills for integrating in a Sylius application (extend core entities, add custom resources)",
-      "version": "1.0.0",
       "author": {
         "name": "Guiziweb",
         "email": "guiziweb@gmail.com"
@@ -50,7 +47,6 @@
       "name": "sylius-stack",
       "source": "./plugins/sylius-stack",
       "description": "Build Symfony apps with the Sylius Stack (Resource, Grid, Bootstrap Admin UI, Twig Hooks)",
-      "version": "1.1.0",
       "author": {
         "name": "Guiziweb",
         "email": "guiziweb@gmail.com"
@@ -68,7 +64,6 @@
       "name": "claude-hud",
       "source": "./plugins/claude-hud",
       "description": "Minimal statusline HUD showing the current context usage percentage",
-      "version": "0.2.2",
       "author": {
         "name": "Guiziweb",
         "email": "guiziweb@gmail.com"
