@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/Guiziweb/guiziweb-plugins/compare/sylius-plugin-v3.0.0...sylius-plugin-v3.1.0) (2026-05-24)
+
+
+### Features
+
+* distribute sylius plugins via the Cursor marketplace ([#19](https://github.com/Guiziweb/guiziweb-plugins/issues/19)) ([913756b](https://github.com/Guiziweb/guiziweb-plugins/commit/913756b01f756276408589e6b6d765a639146d67))
+
 ## [3.0.0](https://github.com/Guiziweb/guiziweb-plugins/compare/sylius-plugin-v2.0.0...sylius-plugin-v3.0.0) (2026-05-24)
 
 
