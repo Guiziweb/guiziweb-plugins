@@ -1,8 +1,20 @@
 {
   "packages": {
-    "plugins/sylius": {
+    "plugins/sylius-plugin": {
       "release-type": "simple",
-      "component": "sylius",
+      "component": "sylius-plugin",
+      "bump-minor-pre-major": true,
+      "extra-files": [
+        {
+          "type": "json",
+          "path": ".claude-plugin/plugin.json",
+          "jsonpath": "$.version"
+        }
+      ]
+    },
+    "plugins/sylius-app": {
+      "release-type": "simple",
+      "component": "sylius-app",
       "bump-minor-pre-major": true,
       "extra-files": [
         {

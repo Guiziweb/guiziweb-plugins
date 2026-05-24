@@ -1,0 +1,9 @@
+{
+  "name": "sylius-app",
+  "description": "Skills for integrating in a Sylius application (extend core entities, add custom resources)",
+  "version": "1.0.0",
+  "author": {
+    "name": "Guiziweb",
+    "email": "guiziweb@gmail.com"
+  }
+}
