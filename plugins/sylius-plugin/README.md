@@ -1,6 +1,6 @@
 # sylius-plugin
 
-Skills for developers building a **distributable Sylius plugin** — a project with `composer.json` `type: sylius-plugin`, the `PluginSkeleton` layout, and a `tests/Application/` test app.
+Skills for developers building a **distributable Sylius plugin** — a project with `composer.json` `type: sylius-plugin`, the `PluginSkeleton` layout, and a `tests/TestApplication/` test app.
 
 ## Environment variables
 
