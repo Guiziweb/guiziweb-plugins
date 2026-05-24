@@ -71,7 +71,7 @@ services:
 
 ## 3. Declare the form in the resource config
 
-Edit `config/packages/sylius_resource.yaml`. Add `form:` under the existing `classes:` for `${SYLIUS_PREFIX}.{model_snake}`:
+Edit `config/resources/{model_snake}.yaml` at the **plugin root** (the file created by `/sylius-plugin:add-model`). Add `form:` under the existing `classes:`:
 
 ```yaml
 sylius_resource:
