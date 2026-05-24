@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/Guiziweb/guiziweb-plugins/compare/sylius-stack-v2.0.0...sylius-stack-v2.1.0) (2026-05-24)
+
+
+### Features
+
+* distribute sylius plugins via the Cursor marketplace ([#19](https://github.com/Guiziweb/guiziweb-plugins/issues/19)) ([913756b](https://github.com/Guiziweb/guiziweb-plugins/commit/913756b01f756276408589e6b6d765a639146d67))
+
 ## [2.0.0](https://github.com/Guiziweb/guiziweb-plugins/compare/sylius-stack-v1.1.0...sylius-stack-v2.0.0) (2026-05-24)
 
 
