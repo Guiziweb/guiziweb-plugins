@@ -13,18 +13,7 @@ Ask the user for the ModelName if not provided. Read `src/**/Entity/{ModelName}/
 
 ## 1. Setup (one-time per project)
 
-One grid file per resource at a unified path: `config/packages/grids/{model_snake}.yaml`.
-
-Add (or extend) an `imports:` block at the top of `tests/TestApplication/config/packages/_sylius.yaml` (create if missing) so the split files are loaded:
-
-```yaml
-imports:
-    - { resource: "grids/*.yaml" }
-    # and "twig_hooks/**/*.yaml" if twig hooks are used by this project
-
-sylius_addressing:
-    # ... existing content untouched
-```
+One grid file per resource at `config/grids/{model_snake}.yaml` at the **plugin root** (matches AdyenPlugin / MolliePlugin convention). Add the glob import once to the plugin's `config/config.yaml`: `- { resource: "grids/*.yaml" }`.
 
 ## 2. Ask the user
 
@@ -57,6 +46,18 @@ sylius_grid:
                 # see §6
 ```
 
+**Translatable resource?** Extend `driver.options` so the grid query joins translations under alias `translation` (the custom repository from `/sylius-plugin:add-translatable-model` is consumed only when you ask for it explicitly — same pattern as `sylius_admin_product_option`):
+
+```yaml
+            driver:
+                name: doctrine/orm
+                options:
+                    class: "%${SYLIUS_PREFIX}.model.{model_snake}.class%"
+                    repository:
+                        method: createListQueryBuilder
+                        arguments: ["expr:service('sylius.context.locale').getLocaleCode()"]
+```
+
 ## 4. Fields
 
 The only valid grid field types are `string`, `datetime`, `enum`, `twig`, and `callable`. 
@@ -67,6 +68,7 @@ The only valid grid field types are `string`, `datetime`, `enum`, `twig`, and `c
 | `datetime`, `date` | `datetime` | option `format` (default `Y:m:d H:i:s`) |
 | `boolean` | `twig` | template `@SyliusUi/Grid/Field/enabled.html.twig` |
 | Relation property (ManyToOne) | `string` with `path: relation.property` | e.g. `author.username` |
+| **Translatable field** | `string` (no `path:`) | display falls back on the PHP getter, which delegates to `getTranslation()`. For SQL sort use `sortable: translation.{field}`. The grid driver must also call the locale-aware list builder — see §3 above. Pattern: `sylius_admin_product_option`. |
 | Complex / multi-property render | `twig` with `path: .` | full object available as `{{ data.* }}` in template |
 
 **Common options on every field:**
@@ -118,6 +120,8 @@ String filter operators (for `form_options.type:`): `contains`, `not_contains`, 
 Useful options:
 - `default_value: true` — pre-fill the filter (e.g. enabled-only view by default)
 - `enabled: false` — hide a filter inherited from a parent grid
+
+**For translatable fields**: a string filter targeting a field defined on the `*Translation` entity must spell out the DQL path — `options.fields: [translation.{field}]`. Without it, Doctrine throws "field has no field named title" because the column lives on the join, not the root entity.
 
 For an AJAX autocomplete filter on a related entity, Sylius ships two ready-to-use filter types — you do **not** need a custom filter class or to call `/sylius-plugin:add-autocomplete`:
 
