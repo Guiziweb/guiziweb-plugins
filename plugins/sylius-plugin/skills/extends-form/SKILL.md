@@ -85,11 +85,11 @@ services:
 
 ## 5. Register the Twig hooks (split by action)
 
-One file per action under `tests/TestApplication/config/packages/twig_hooks/{target_model_snake}/`. Loaded via the `imports:` block at the top of `tests/TestApplication/config/packages/_sylius.yaml` (add `- { resource: "twig_hooks/**/*.yaml" }` if not already there).
+One file per action under `config/twig_hooks/admin/{target_model_snake}/` at the **plugin root**. Loaded via the plugin's `config/config.yaml` (add `- { resource: "twig_hooks/**/*.yaml" }` to its imports if not already there).
 
 If files already exist for this target (from a previous `extends-form` run), add the new entry under the existing hook key — do not overwrite.
 
-`tests/TestApplication/config/packages/twig_hooks/{target_model_snake}/create.yaml`:
+`config/twig_hooks/admin/{target_model_snake}/create.yaml`:
 
 ```yaml
 sylius_twig_hooks:
@@ -100,7 +100,7 @@ sylius_twig_hooks:
                 priority: -100
 ```
 
-`tests/TestApplication/config/packages/twig_hooks/{target_model_snake}/update.yaml` — same content, replace `.create.` with `.update.`.
+`config/twig_hooks/admin/{target_model_snake}/update.yaml` — same content, replace `.create.` with `.update.`.
 
 A negative priority places the field at the bottom of the section without renumbering existing entries.
 
