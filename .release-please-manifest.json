@@ -1,6 +1,6 @@
 {
-  "plugins/sylius-plugin": "2.0.0",
-  "plugins/sylius-app": "1.0.0",
-  "plugins/sylius-stack": "1.1.0",
+  "plugins/sylius-plugin": "3.0.0",
+  "plugins/sylius-app": "2.0.0",
+  "plugins/sylius-stack": "2.0.0",
   "plugins/claude-hud": "0.2.2"
 }

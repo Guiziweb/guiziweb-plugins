@@ -1,5 +1,35 @@
 # Changelog
 
+## [3.0.0](https://github.com/Guiziweb/guiziweb-plugins/compare/sylius-plugin-v2.0.0...sylius-plugin-v3.0.0) (2026-05-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* plugin renamed. Users must reinstall:
+    - `claude plugin install sylius-plugin@guiziweb-plugins`
+    - `claude plugin install sylius-app@guiziweb-plugins`
+* **sylius:** plugin renamed from sylius-plugin to sylius. Users must reinstall with `claude plugin install sylius`.
+
+### Features
+
+* add Stack docs, restructure skills, rename sylius-plugin ([f8ac096](https://github.com/Guiziweb/guiziweb-plugins/commit/f8ac096b6948de2853d12b3de096d1dd5e9eada3))
+* **init:** use bootstrap workflow instead of manual setup ([ed23d77](https://github.com/Guiziweb/guiziweb-plugins/commit/ed23d778e1fee3b8b302d09e19fc0f72dcbcdf72))
+* split sylius plugin into sylius-plugin and sylius-app ([#16](https://github.com/Guiziweb/guiziweb-plugins/issues/16)) ([a39cf62](https://github.com/Guiziweb/guiziweb-plugins/commit/a39cf625a4cfb349d2703dbf0f07bb55d8ebcb37))
+* **sylius-doc:** auto-clone via hook, simplify install ([c992ff2](https://github.com/Guiziweb/guiziweb-plugins/commit/c992ff2e04476b0fb9a507958036768ad5e495f8))
+* **sylius-plugin:** add 8 new skills and rename override-model to extends-model ([3224ada](https://github.com/Guiziweb/guiziweb-plugins/commit/3224ada5626fb18abe132b7c3d81a72209e0ede8))
+* **sylius-plugin:** add add-behat skill ([35818f3](https://github.com/Guiziweb/guiziweb-plugins/commit/35818f3ca11f513a62a68d8c34f9bce734e71c53))
+* **sylius-plugin:** add form-extension skill and align existing skills with Sylius docs ([6f3cbf4](https://github.com/Guiziweb/guiziweb-plugins/commit/6f3cbf4a38453c44dcd34f6741ce5ea09e2958aa))
+* **sylius-plugin:** add skills for models, Stimulus controllers and dev commands ([a57cb47](https://github.com/Guiziweb/guiziweb-plugins/commit/a57cb47e9d109291d24532bf4c0a462570917e79))
+* **sylius-plugin:** simplify init skill, move templates to .github, remove sylius-doc ([04b836c](https://github.com/Guiziweb/guiziweb-plugins/commit/04b836c5ac362c3fe39e3f8ec86456c6c17068f3))
+* **sylius-plugin:** translate and improve dev-commands skill ([f92b1c6](https://github.com/Guiziweb/guiziweb-plugins/commit/f92b1c68326b627ca5df73686e8330961388798a))
+* **sylius:** rename plugin to sylius and unify plugin/app contexts ([3edb2e6](https://github.com/Guiziweb/guiziweb-plugins/commit/3edb2e6f64a313761707bf83c68590f36a270a95))
+
+
+### Bug Fixes
+
+* **sylius-plugin:** load resources.yaml and grids.yaml via config.yaml imports ([76b3aab](https://github.com/Guiziweb/guiziweb-plugins/commit/76b3aab762c9acb74dc7ebf8ba519d831d751eb6))
+* sync marketplace plugin names and add validation hook ([c8808ee](https://github.com/Guiziweb/guiziweb-plugins/commit/c8808ee4985d492cee6ddb349626ba56dd0c2778))
+
 ## [2.0.0](https://github.com/Guiziweb/guiziweb-plugins/compare/sylius-v1.7.0...sylius-v2.0.0) (2026-04-28)
 
 
