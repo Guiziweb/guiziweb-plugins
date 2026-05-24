@@ -1,7 +1,7 @@
 {
   "name": "sylius-plugin",
   "description": "Skills for developing a Sylius plugin (PluginSkeleton, test application, distributable package)",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "author": {
     "name": "Guiziweb",
     "email": "guiziweb@gmail.com"
