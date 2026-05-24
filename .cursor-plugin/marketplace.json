@@ -1,0 +1,64 @@
+{
+  "name": "guiziweb-plugins",
+  "owner": {
+    "name": "Guiziweb",
+    "email": "guiziweb@gmail.com"
+  },
+  "metadata": {
+    "description": "Sylius plugin development tools for Cursor",
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "sylius-plugin",
+      "source": "./plugins/sylius-plugin",
+      "description": "Skills for developing a Sylius plugin (PluginSkeleton, test application, distributable package)",
+      "author": {
+        "name": "Guiziweb",
+        "email": "guiziweb@gmail.com"
+      },
+      "homepage": "https://github.com/Guiziweb/guiziweb-plugins",
+      "repository": "https://github.com/Guiziweb/guiziweb-plugins",
+      "license": "MIT",
+      "keywords": [
+        "sylius",
+        "plugin"
+      ],
+      "category": "productivity"
+    },
+    {
+      "name": "sylius-app",
+      "source": "./plugins/sylius-app",
+      "description": "Skills for integrating in a Sylius application (extend core entities, add custom resources)",
+      "author": {
+        "name": "Guiziweb",
+        "email": "guiziweb@gmail.com"
+      },
+      "homepage": "https://github.com/Guiziweb/guiziweb-plugins",
+      "repository": "https://github.com/Guiziweb/guiziweb-plugins",
+      "license": "MIT",
+      "keywords": [
+        "sylius",
+        "app"
+      ],
+      "category": "productivity"
+    },
+    {
+      "name": "sylius-stack",
+      "source": "./plugins/sylius-stack",
+      "description": "Build Symfony apps with the Sylius Stack (Resource, Grid, Bootstrap Admin UI, Twig Hooks)",
+      "author": {
+        "name": "Guiziweb",
+        "email": "guiziweb@gmail.com"
+      },
+      "homepage": "https://github.com/Guiziweb/guiziweb-plugins",
+      "repository": "https://github.com/Guiziweb/guiziweb-plugins",
+      "license": "MIT",
+      "keywords": [
+        "sylius",
+        "stack"
+      ],
+      "category": "productivity"
+    }
+  ]
+}
