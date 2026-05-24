@@ -139,7 +139,7 @@ To reach a Sylius core entity from a plugin (e.g. attach plugin data to `Product
 
 ## 3. Register as Sylius Resource
 
-Append to `config/packages/sylius_resource.yaml` at the **plugin root** (create if missing). The `PluginSkeleton` test-app loads only `tests/TestApplication/config/config.yaml` (via `SYLIUS_TEST_APP_CONFIGS_TO_IMPORT`), which itself imports `@{PluginBundle}/config/config.yaml` — so the plugin's own config has to pull in the packages dir. Add once to the plugin's `config/config.yaml`: `- { resource: "packages/*.yaml" }`.
+Create `config/resources/{model_snake}.yaml` at the **plugin root** (one file per resource — matches ProductBundlePlugin / MolliePlugin convention). Add the glob import once to the plugin's `config/config.yaml`: `- { resource: "resources/*.yaml" }`. The test app loads `@{PluginBundle}/config/config.yaml` via its own `tests/TestApplication/config/config.yaml`, which cascades the import.
 
 ```yaml
 sylius_resource:
