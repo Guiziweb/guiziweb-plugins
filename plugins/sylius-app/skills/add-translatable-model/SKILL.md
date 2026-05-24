@@ -102,7 +102,36 @@ class {ModelName} implements {ModelName}Interface, TranslatableInterface
 
 **Do NOT redeclare `$translations`** — already defined in `TranslatableTrait`. If the entity has a constructor already (e.g. from relations added by `add-model`), merge the body into the existing constructor rather than duplicating.
 
-## 4. Create the TranslationType
+## 4. Create the list-query repository
+
+For admin grids to sort or filter on translated columns, the resource's repository must JOIN translations under the alias `translation`. Without it, Doctrine throws `has no field named {field}` whenever a sort/filter touches a translated field — display via PHP getter still works, hiding the bug.
+
+`src/Repository/{ModelName}Repository.php`:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Repository;
+
+use Doctrine\ORM\QueryBuilder;
+use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
+
+final class {ModelName}Repository extends EntityRepository
+{
+    public function createListQueryBuilder(string $locale): QueryBuilder
+    {
+        return $this->createQueryBuilder('o')
+            ->addSelect('translation')
+            ->leftJoin('o.translations', 'translation', 'WITH', 'translation.locale = :locale')
+            ->setParameter('locale', $locale)
+        ;
+    }
+}
+```
+
+## 5. Create the TranslationType
 
 `src/Form/Type/{ModelName}/{ModelName}TranslationType.php`:
 
@@ -135,7 +164,7 @@ final class {ModelName}TranslationType extends AbstractResourceType
 
 Labels for translation fields share the same `app.form.{model_snake}.*` namespace as the main FormType — the resource is the same, the field lives there regardless of whether it's translatable.
 
-## 5. Update the main FormType
+## 6. Update the main FormType
 
 The `{ModelName}Type` already exists. Replace the translatable fields with a `ResourceTranslationsType`:
 
@@ -151,7 +180,7 @@ $builder
 ;
 ```
 
-## 6. Register services in `config/services.yaml`
+## 7. Register services in `config/services.yaml`
 
 Add the translation form type:
 
@@ -188,9 +217,9 @@ services:
             - { name: sylius.live_component.admin, key: 'app:{model_snake}:form' }
 ```
 
-## 7. Update the resource config
+## 8. Update the resource config
 
-Edit `config/packages/sylius_resource.yaml`. Add the `translation:` block to the existing `app.{model_snake}` entry, and add `form:` under `classes:` if not already there:
+Edit `config/packages/sylius_resource.yaml`. Add the `translation:` block to the existing `app.{model_snake}` entry, add `form:` under `classes:` if not already there, and declare the custom `repository:` from step 4:
 
 ```yaml
 sylius_resource:
@@ -201,6 +230,7 @@ sylius_resource:
                 model: App\Entity\{ModelName}\{ModelName}
                 interface: App\Entity\{ModelName}\{ModelName}Interface
                 form: App\Form\Type\{ModelName}\{ModelName}Type
+                repository: App\Repository\{ModelName}Repository
             translation:
                 classes:
                     model: App\Entity\{ModelName}\{ModelName}Translation
@@ -208,7 +238,7 @@ sylius_resource:
                     form: App\Form\Type\{ModelName}\{ModelName}TranslationType
 ```
 
-## 8. Templates
+## 9. Templates
 
 Sylius renders translation forms with accordion-style locale tabs via the `translations.with_hook` macro. Without the hookable templates below, fields are rendered without locale tabs and potentially twice.
 
@@ -261,7 +291,7 @@ One template per **translatable** field at `templates/admin/{model_snake}/form/s
 </div>
 ```
 
-## 9. Twig hooks
+## 10. Twig hooks
 
 Hook files are split by action (`create.yaml`, `update.yaml`), one directory per resource — matching Sylius core convention.
 
@@ -315,7 +345,7 @@ sylius_twig_hooks:
 
 Same structure as `create.yaml` — replace every occurrence of `.create.` with `.update.`.
 
-## 10. Generate and apply the migration
+## 11. Generate and apply the migration
 
 ```bash
 bin/console doctrine:migrations:diff
@@ -333,7 +363,7 @@ Apply:
 bin/console doctrine:migrations:migrate --no-interaction
 ```
 
-## 11. Translation keys
+## 12. Translation keys
 
 Get the project's default locale:
 
@@ -353,17 +383,35 @@ app:
             description: Description
 ```
 
-## 12. Clear cache
+## 13. Clear cache
 
 ```bash
 bin/console cache:clear
 ```
 
-## 13. Verify
+## 14. Verify
 
 - [ ] `bin/console sylius:debug:resource 'App\Entity\{ModelName}\{ModelName}'` prints the main resource and references the translation class in its `translation.classes.model` row
 - [ ] `bin/console sylius:debug:resource 'App\Entity\{ModelName}\{ModelName}Translation'` prints the translation resource
 - [ ] `bin/console doctrine:query:sql "DESCRIBE app_{model_snake}_translation"` lists the expected columns (`id`, `translatable_id`, `locale`, plus translatable fields)
+
+## Heads-up for existing grids
+
+If a grid was already configured for this resource before making it translatable, the grid needs three tweaks (display via PHP getter still works, but sort/filter break silently):
+
+1. **Grid driver** must call the locale-aware list builder so translations are joined:
+   ```yaml
+   driver:
+       options:
+           class: "%app.model.{model_snake}.class%"
+           repository:
+               method: createListQueryBuilder
+               arguments: ["expr:service('sylius.context.locale').getLocaleCode()"]
+   ```
+2. **Field** for a translatable column: keep `type: string` and **do not** set `path:` — the PHP getter delegates. Change `sortable: ~` to `sortable: translation.{field}` (DQL path used by `ORDER BY`).
+3. **Filter** targeting a translatable column: `options.fields: [translation.{field}]` (DQL path used by `WHERE`).
+
+See `/sylius-app:add-grid` for the full grid syntax.
 
 ## Next steps
 
