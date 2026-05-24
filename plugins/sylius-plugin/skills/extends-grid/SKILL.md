@@ -25,9 +25,7 @@ Read the output before writing: override keys must exactly match existing field/
 
 ## 2. Write the override
 
-File location matches the rest of the test app: `tests/TestApplication/config/packages/grids/{alias}.yaml` (e.g. `sylius_admin_product.yaml`). Naming the file after the alias keeps overrides self-documenting.
-
-Assumes `tests/TestApplication/config/packages/_sylius.yaml` already imports `grids/*.yaml` at its top. If not, run `/sylius-plugin:add-grid` once to scaffold it.
+Add the override to `config/grids/{alias_short}.yaml` at the **plugin root** (one file per overridden grid — same `config/grids/` directory used by `/sylius-plugin:add-grid`). `{alias_short}` is the grid alias with the `sylius_admin_` prefix stripped (e.g. `product_review` for `sylius_admin_product_review`). Sylius merges your override onto the inherited core grid.
 
 Only include the keys being modified — everything else stays inherited.
 
