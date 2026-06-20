@@ -42,8 +42,8 @@ git push
 Hand the PR back to the reviewer: reassign it and move both the PR and the issue to `needs review`.
 
 ```bash
-gh pr edit $pr --add-assignee camilleislasse --remove-label "in progress" --add-label "needs review"
-gh issue edit $issue --remove-label "in progress" --add-label "needs review"
+gh pr edit $pr --add-assignee camilleislasse --remove-label "in progress" --remove-label "blocked" --add-label "needs review"
+gh issue edit $issue --remove-label "in progress" --remove-label "blocked" --add-label "needs review"
 ```
 
 ## Stuck — ambiguous feedback
@@ -52,8 +52,8 @@ If the feedback is unclear, do **not** push anything:
 
 ```bash
 gh pr comment $pr --body "@camilleislasse <what is unclear>"
-gh pr edit $pr --remove-label "in progress" --add-label "blocked"
-gh issue edit $issue --remove-label "in progress" --add-label "blocked"
+gh pr edit $pr --remove-label "in progress" --remove-label "needs review" --add-label "blocked"
+gh issue edit $issue --remove-label "in progress" --remove-label "needs review" --add-label "blocked"
 ```
 
 Then stop.

@@ -45,7 +45,7 @@ Closes #$issue"
 The PR is in your court. Move the issue to `needs review` too.
 
 ```bash
-gh issue edit $issue --remove-label "in progress" --add-label "needs review"
+gh issue edit $issue --remove-label "in progress" --remove-label "blocked" --add-label "needs review"
 ```
 
 ## Stuck — ambiguous or blocked
@@ -53,7 +53,7 @@ gh issue edit $issue --remove-label "in progress" --add-label "needs review"
 If you cannot proceed (ambiguous request, missing information, or a failure you cannot resolve), do **not** open a PR. Instead:
 
 ```bash
-gh issue edit $issue --remove-label "in progress" --add-label "blocked"
+gh issue edit $issue --remove-label "in progress" --remove-label "needs review" --add-label "blocked"
 gh issue comment $issue --body "@camilleislasse <your specific question or what is blocking>"
 ```
 
