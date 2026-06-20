@@ -1,5 +1,17 @@
 {
   "packages": {
+    "plugins/guiziweb-bot": {
+      "release-type": "simple",
+      "component": "guiziweb-bot",
+      "bump-minor-pre-major": true,
+      "extra-files": [
+        {
+          "type": "json",
+          "path": ".claude-plugin/plugin.json",
+          "jsonpath": "$.version"
+        }
+      ]
+    },
     "plugins/sylius-plugin": {
       "release-type": "simple",
       "component": "sylius-plugin",

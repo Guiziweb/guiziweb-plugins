@@ -10,6 +10,7 @@ Claude Code plugins by Guiziweb.
 | [`sylius-app`](./plugins/sylius-app/README.md) | Skills for integrating in a Sylius application (extend core entities, add custom resources) |
 | [`sylius-stack`](./plugins/sylius-stack/README.md) | Skills for building Symfony apps with the Sylius Stack |
 | [`claude-hud`](./plugins/claude-hud/README.md) | Minimal context + rate-limits statusline HUD |
+| [`guiziweb-bot`](./plugins/guiziweb-bot/README.md) | Automation skills for the guiziwebbot GitHub bot (issue → PR, apply review feedback) |
 
 ## Installation
 
