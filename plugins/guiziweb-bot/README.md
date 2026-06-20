@@ -11,7 +11,7 @@ The bot never merges: every change lands as a Pull Request that you review and m
 | [`guiziweb-bot:fix-issue`](./skills/fix-issue/SKILL.md) | Implement the change described in an issue and open a Pull Request that closes it, assigned to you |
 | [`guiziweb-bot:revise-pr`](./skills/revise-pr/SKILL.md) | Apply the latest review feedback to a Pull Request and push it to the PR branch |
 
-Both skills manage two issue labels to surface progress: `bot:working` while the bot is on the ticket, `bot:stuck` when it needs you. These labels are created once when a repository is onboarded to the bot.
+Both skills surface progress through three labels carried on the issue and the PR: `in progress` while the bot works, `needs review` when it hands the work back to you, `blocked` when it needs your input. These labels are created once when a repository is onboarded to the bot.
 
 ## Local development
 
