@@ -18,10 +18,13 @@ gh pr view $pr --comments
 
 The feedback is the **most recent comment by `camilleislasse` containing `@guiziwebbot fix`**. If that feedback is ambiguous, **do not guess** — go to *Stuck* below.
 
-## 2. Mark the ticket as in progress
+## 2. Mark in progress
+
+Both the PR and the issue it closes move to `in progress`.
 
 ```bash
-gh issue edit $issue --remove-label "bot:stuck" --remove-label "bot:review" --add-label "bot:working"
+gh pr edit $pr --remove-label "blocked" --remove-label "needs review" --add-label "in progress"
+gh issue edit $issue --remove-label "blocked" --remove-label "needs review" --add-label "in progress"
 ```
 
 ## 3. Apply and push
@@ -36,11 +39,11 @@ git push
 
 ## 4. Done
 
-Hand the PR back to the reviewer and clear the in-progress label.
+Hand the PR back to the reviewer: reassign it and move both the PR and the issue to `needs review`.
 
 ```bash
-gh pr edit $pr --add-assignee camilleislasse
-gh issue edit $issue --remove-label "bot:working" --add-label "bot:review"
+gh pr edit $pr --add-assignee camilleislasse --remove-label "in progress" --add-label "needs review"
+gh issue edit $issue --remove-label "in progress" --add-label "needs review"
 ```
 
 ## Stuck — ambiguous feedback
@@ -49,7 +52,8 @@ If the feedback is unclear, do **not** push anything:
 
 ```bash
 gh pr comment $pr --body "@camilleislasse <what is unclear>"
-gh issue edit $issue --remove-label "bot:working" --add-label "bot:stuck"
+gh pr edit $pr --remove-label "in progress" --add-label "blocked"
+gh issue edit $issue --remove-label "in progress" --add-label "blocked"
 ```
 
 Then stop.

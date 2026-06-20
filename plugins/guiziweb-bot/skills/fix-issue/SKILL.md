@@ -18,12 +18,12 @@ gh issue view $issue
 
 Understand what is asked. If the request is ambiguous or the fix is not evident, **do not guess** — go straight to *Stuck* below.
 
-## 2. Mark the ticket as in progress
+## 2. Mark the issue in progress
 
-The `bot:working`, `bot:review` and `bot:stuck` labels are created once when the repo is onboarded to the bot. The issue carries exactly one of them at a time.
+The `in progress`, `needs review` and `blocked` labels are created once when the repo is onboarded to the bot. A ticket carries exactly one of them at a time.
 
 ```bash
-gh issue edit $issue --remove-label "bot:stuck" --remove-label "bot:review" --add-label "bot:working"
+gh issue edit $issue --remove-label "blocked" --remove-label "needs review" --add-label "in progress"
 ```
 
 ## 3. Implement
@@ -32,30 +32,28 @@ Follow the repository conventions: read `CLAUDE.md` and `.claude/rules/*` if the
 
 ## 4. Open the Pull Request
 
-Commit on a dedicated branch and open the PR. Its body **must** contain `Closes #$issue`.
+Commit on a dedicated branch and open the PR — assigned to the reviewer, labelled `needs review`, body containing `Closes #$issue`.
 
 ```bash
-gh pr create --title "<concise title>" --assignee camilleislasse --body "<summary>
+gh pr create --title "<concise title>" --assignee camilleislasse --label "needs review" --body "<summary>
 
 Closes #$issue"
 ```
 
 ## 5. Done
 
-The PR is open and assigned to you. Mark the issue as awaiting your review.
+The PR is in your court. Move the issue to `needs review` too.
 
 ```bash
-gh issue edit $issue --remove-label "bot:working" --add-label "bot:review"
+gh issue edit $issue --remove-label "in progress" --add-label "needs review"
 ```
-
-The PR's native states (review required, checks) take over from here.
 
 ## Stuck — ambiguous or blocked
 
 If you cannot proceed (ambiguous request, missing information, or a failure you cannot resolve), do **not** open a PR. Instead:
 
 ```bash
-gh issue edit $issue --remove-label "bot:working" --add-label "bot:stuck"
+gh issue edit $issue --remove-label "in progress" --add-label "blocked"
 gh issue comment $issue --body "@camilleislasse <your specific question or what is blocking>"
 ```
 
