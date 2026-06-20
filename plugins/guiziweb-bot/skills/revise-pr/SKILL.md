@@ -21,7 +21,7 @@ The feedback is the **most recent comment by `camilleislasse` containing `@guizi
 ## 2. Mark the ticket as in progress
 
 ```bash
-gh issue edit $issue --remove-label "bot:stuck" --add-label "bot:working"
+gh issue edit $issue --remove-label "bot:stuck" --remove-label "bot:review" --add-label "bot:working"
 ```
 
 ## 3. Apply and push
@@ -36,8 +36,11 @@ git push
 
 ## 4. Done
 
+Hand the PR back to the reviewer and clear the in-progress label.
+
 ```bash
-gh issue edit $issue --remove-label "bot:working"
+gh pr edit $pr --add-assignee camilleislasse
+gh issue edit $issue --remove-label "bot:working" --add-label "bot:review"
 ```
 
 ## Stuck — ambiguous feedback

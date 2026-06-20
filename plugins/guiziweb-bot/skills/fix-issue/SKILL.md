@@ -20,10 +20,10 @@ Understand what is asked. If the request is ambiguous or the fix is not evident,
 
 ## 2. Mark the ticket as in progress
 
-The `bot:working` and `bot:stuck` labels are created once when the repo is onboarded to the bot.
+The `bot:working`, `bot:review` and `bot:stuck` labels are created once when the repo is onboarded to the bot. The issue carries exactly one of them at a time.
 
 ```bash
-gh issue edit $issue --remove-label "bot:stuck" --add-label "bot:working"
+gh issue edit $issue --remove-label "bot:stuck" --remove-label "bot:review" --add-label "bot:working"
 ```
 
 ## 3. Implement
@@ -42,8 +42,10 @@ Closes #$issue"
 
 ## 5. Done
 
+The PR is open and assigned to you. Mark the issue as awaiting your review.
+
 ```bash
-gh issue edit $issue --remove-label "bot:working"
+gh issue edit $issue --remove-label "bot:working" --add-label "bot:review"
 ```
 
 The PR's native states (review required, checks) take over from here.
