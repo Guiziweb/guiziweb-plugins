@@ -1,7 +1,7 @@
 {
   "name": "guiziweb-bot",
   "description": "Automation skills for the guiziwebbot GitHub bot: implement an issue into a PR, and apply review feedback to a PR",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
     "name": "Guiziweb",
     "email": "guiziweb@gmail.com"
