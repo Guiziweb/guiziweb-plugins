@@ -3,5 +3,5 @@
   "plugins/sylius-app": "2.1.0",
   "plugins/sylius-stack": "2.1.0",
   "plugins/claude-hud": "0.2.2",
-  "plugins/guiziweb-bot": "0.1.0"
+  "plugins/guiziweb-bot": "0.2.0"
 }
