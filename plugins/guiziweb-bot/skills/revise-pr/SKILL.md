@@ -18,12 +18,13 @@ gh pr view $pr --comments
 
 The feedback is the **most recent comment by `camilleislasse` containing `@guiziwebbot fix`**. If that feedback is ambiguous, **do not guess** — go to *Stuck* below.
 
-## 2. Mark in progress
+> **Labels on the PR are owned by the workflow.** It already set `in progress` on this PR before you started, reassigns it to the reviewer, and sets `needs review` (or leaves `blocked`) when you finish. Do **not** touch the PR's lifecycle labels. You only manage the *linked issue* (which the workflow does not see) and the `blocked` signal.
 
-Both the PR and the issue it closes move to `in progress`.
+## 2. Keep the linked issue in sync
+
+The PR is handled by the workflow; mirror its state onto the issue it closes.
 
 ```bash
-gh pr edit $pr --remove-label "blocked" --remove-label "needs review" --add-label "in progress"
 gh issue edit $issue --remove-label "blocked" --remove-label "needs review" --add-label "in progress"
 ```
 
@@ -39,16 +40,15 @@ git push
 
 ## 4. Done
 
-Hand the PR back to the reviewer: reassign it and move both the PR and the issue to `needs review`.
+The workflow hands the PR back to the reviewer (reassign + `needs review`). You only move the linked issue back to `needs review`.
 
 ```bash
-gh pr edit $pr --add-assignee camilleislasse --remove-label "in progress" --remove-label "blocked" --add-label "needs review"
 gh issue edit $issue --remove-label "in progress" --remove-label "blocked" --add-label "needs review"
 ```
 
 ## Stuck — ambiguous feedback
 
-If the feedback is unclear, do **not** push anything:
+If the feedback is unclear, do **not** push anything. Set `blocked` (the signal you own) on both the PR and the issue, and ask:
 
 ```bash
 gh pr comment $pr --body "@camilleislasse <what is unclear>"
@@ -56,4 +56,4 @@ gh pr edit $pr --remove-label "in progress" --remove-label "needs review" --add-
 gh issue edit $issue --remove-label "in progress" --remove-label "needs review" --add-label "blocked"
 ```
 
-Then stop.
+Then stop. (The workflow sees `blocked` on the PR and leaves it in place.)
